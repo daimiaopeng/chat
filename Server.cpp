@@ -3,30 +3,17 @@
 //
 
 #include "Server.h"
-#include <iostream>
-#include <sys/epoll.h>
 
 using namespace std;
-
-struct event_infor{
-    string ip;
-    u_int port;
-    int fd;
-};
+using namespace std::placeholders;
 
 void Server::run() {
-    char buff[BUFF_MAX];
-    struct epoll_event listen_event;
-    listen_event.events = EPOLLIN;
+    initsocket();
 
-    event_infor server_infor;
-    server_infor.fd = lfd;
-    listen_event.data.ptr = &server_infor;
-    int epoll_fd = epoll_create(128);
-    epoll_ctl(epoll_fd, EPOLL_CTL_ADD, lfd, &listen_event);
     struct epoll_event events[20];
+
     for (;;) {
-        int nums_epoll = epoll_wait(epoll_fd, events, 128, NULL);
+        int nums_epoll = epoll_wait(epoll_fd, events, 128, -1);
         if (nums_epoll == -1) {
             perror("epoll_wait() error");
         }
@@ -35,18 +22,7 @@ void Server::run() {
                 continue;
             }
             event_infor *infor = static_cast<event_infor *>(events[i].data.ptr);
-            if (infor->fd == lfd) {
-                eventadd(lfd,epoll_fd);
-            } else {
-                int client_fd = infor->fd;
-                bzero(&buff, sizeof(buff));
-                recv(client_fd, &buff, sizeof(buff), 0);
-                printf("%s发来一条消息: %s\n",infor->ip.c_str(), buff);
-
-                epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client_fd, NULL);
-                close(client_fd);
-
-            }
+            infor->eventCallback(infor);
         }
     }
 }
@@ -55,18 +31,61 @@ void Server::eventset() {
 
 }
 
-void Server::eventadd(int lfd,int epoll_fd) {
-    sockaddr_in socket_addr;
-    bzero(&socket_addr, sizeof(socket_addr));
-    socklen_t client_addr_len = sizeof(socket_addr);
-    int cfd = accept(lfd, (struct sockaddr *) &socket_addr, &client_addr_len);
+void Server::eventadd(int events, event_infor &infor) {
+    epoll_event event{0, {0}};
+    event.events = events;
+    infor.events = events;
+    event.data.ptr = static_cast<void *>(&infor);
+    epoll_ctl(epoll_fd, EPOLL_CTL_ADD, infor.fd, &event);
+}
 
-    epoll_event client_event;
-    event_infor client_infot;
-    client_infot.fd = cfd;
-    client_infot.ip = inet_ntoa(socket_addr.sin_addr);
-    client_event.data.ptr = static_cast<void  *>(&client_infot);
-    client_event.events = EPOLLIN;
-    epoll_ctl(epoll_fd, EPOLL_CTL_ADD, cfd, &client_event);
+void Server::initsocket() {
+    event_infor *l_infor = new event_infor;
+    l_infor->fd = lfd;
+    l_infor->ip = inet_ntoa(serv_addr.sin_addr);
+    l_infor->port = _port;
+    l_infor->eventCallback = [&](event_infor *infor) { acceptconn(infor); };
+    eventadd(EPOLLIN, *l_infor);
+
+}
+
+void Server::acceptconn(event_infor *infor) {
+    //有请求时 cfd的Callback()调用acceptconn(),accept()一个客户端,然后添加到epoll
+    //设置Callback为自定义的read函数
+//    初始化一个socket结构
+    sockaddr_in socket_addr{};
+    socklen_t client_addr_len = sizeof(socket_addr);
+    int cfd = accept(infor->fd, (struct sockaddr *) &socket_addr, &client_addr_len);
+    if (cfd == -1) {
+        if (errno != EAGAIN && errno != EINTR) {
+            sleep(1);
+        }
+        printf("%s:accept,%s\n", __func__, strerror(errno));
+        return;
+    }
+    event_infor *cli_event_infor = new event_infor;
+    cli_event_infor->fd = cfd;
+    cli_event_infor->ip = inet_ntoa(socket_addr.sin_addr);
+    cli_event_infor->eventCallback = [&](event_infor *infor) { recvdata(infor); };
+    eventadd(EPOLLIN, *cli_event_infor);
+}
+
+void Server::recvdata(event_infor *infor) {
+    char buff[BUFF_MAX]{};
+//    read(infor1->fd, buff,BUFF_MAX);
+    int n = 0;
+    while ((n = read(infor->fd, buff, BUFF_MAX)) > 1) {
+        printf("%s 发来一条消息: %s\n", infor->ip.c_str(), buff);
+        bzero(buff, sizeof(buff));
+    }
+    //如果退出的话要delete
+    delete(infor);
+    epoll_ctl(epoll_fd, EPOLL_CTL_DEL, infor->fd, nullptr);
+    close(infor->fd);
+
+}
+
+void Server::test() {
+    cout << "test " << this->lfd << endl;
 }
 
