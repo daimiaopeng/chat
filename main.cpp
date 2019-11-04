@@ -4,12 +4,15 @@
 #include <thread>
 
 using namespace std;
+
+
 int main() {
 
-    Server server("0.0.0.0",6668);
+    Server server("0.0.0.0",6666);
+
     server.run();
-
-
+//    auto a = std::bind(&test);
+//    a();
 
     return 0;
 }
