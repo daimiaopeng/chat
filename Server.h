@@ -1,6 +1,12 @@
 //
 // Created by daimiaopeng on 2019/10/31.
 //
+
+
+#ifndef CHAT_SERVER_H
+#define CHAT_SERVER_H
+
+#include "MessageQueue.h"
 #include <unistd.h>
 #include <cctype>
 #include <sys/socket.h>
@@ -15,6 +21,7 @@
 #include <future>
 
 struct event_infor;
+
 class MessageQueue;
 
 typedef std::function<void(event_infor *)> EventCallback;
@@ -52,7 +59,7 @@ public:
         bind(lfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
         listen(lfd, 128);
         epoll_fd = epoll_create(128);
-        messageQueue.init(g_events,MAX_EVENTS);
+        messageQueue.init(g_events, MAX_EVENTS);
         messageQueue.run();
     }
 
@@ -63,11 +70,9 @@ public:
 
     void eventdel();
 
-
     void initsocket();
 
     void recvdata(event_infor *infor);
-
 
     void acceptconn(event_infor *infor);
 

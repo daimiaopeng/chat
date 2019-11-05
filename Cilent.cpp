@@ -5,7 +5,7 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
-int main(){
+int main() {
     //创建套接字
     int sock = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -15,11 +15,11 @@ int main(){
     serv_addr.sin_family = AF_INET;  //使用IPv4地址
     serv_addr.sin_addr.s_addr = inet_addr("127.0.0.1");  //具体的IP地址
     serv_addr.sin_port = htons(6668);  //端口
-    connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+    connect(sock, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
     //读取服务器传回的数据
     char buffer[40]{};
-    write(sock,"da", sizeof(3));
-    write(sock,"wqe", sizeof(4));
+    write(sock, "da", sizeof(3));
+    write(sock, "wqe", sizeof(4));
 
 //    read(sock, buffer, sizeof(buffer)-1);
     printf("Message form server: %s\n", buffer);

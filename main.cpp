@@ -8,7 +8,7 @@ using namespace std;
 
 int main() {
 
-    Server server("0.0.0.0",6666);
+    Server server("0.0.0.0", 6666);
 
     server.run();
 //    auto a = std::bind(&test);

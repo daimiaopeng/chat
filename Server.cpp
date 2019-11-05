@@ -9,8 +9,7 @@ using namespace std::placeholders;
 
 void Server::run() {
     initsocket();
-//    _thread = thread(&MessageQueue::sendstr,messageQueue);
-//    _thread.detach();
+
 
     struct epoll_event events[20];
     for (;;) {
@@ -92,7 +91,7 @@ void Server::recvdata(event_infor *infor) {
     int n = recv(infor->fd, buff, BUFF_MAX - 1, 0);
     if (n > 0) { //收到的数据
         infor->buff[n] == '\0';
-        printf("%s [%d]发来一条消息: %s\n", infor->ip.c_str(), infor->fd,buff);
+        printf("%s [%d]发来一条消息: %s\n", infor->ip.c_str(), infor->fd, buff);
         //添加到消息队列
         messageQueue.push(buff);
     } else if (n == 0) {
@@ -138,7 +137,6 @@ void Server::eventadd(int events, event_infor *infor) {
     event.data.ptr = static_cast<void *>(infor);
     epoll_ctl(epoll_fd, EPOLL_CTL_ADD, infor->fd, &event);
 }
-
 
 
 void Server::eventset() {

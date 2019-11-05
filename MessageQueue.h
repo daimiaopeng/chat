@@ -26,12 +26,16 @@ private:
     mutex _mutex;
 public:
     MessageQueue() = default;
-    void init(event_infor *g_events,int len){
-        this->g_events =  g_events;
+
+    void init(event_infor *g_events, int len) {
+        this->g_events = g_events;
         this->len = len;
     };
+
     void push(char str[]);
+
     void run();
+
     void sendstr();
 };
 

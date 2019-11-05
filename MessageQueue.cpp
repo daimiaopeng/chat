@@ -13,19 +13,21 @@ void MessageQueue::push(char str[]) {
 }
 
 void MessageQueue::run() {
-    thread _thread(&MessageQueue::sendstr,this);
+    thread _thread(&MessageQueue::sendstr, this);
     _thread.detach();
 }
 
 void MessageQueue::sendstr() {
-    for(;;){
+    for (;;) {
         lock_guard<mutex> lock(_mutex);
-        if(!_queue.empty()){
+        if (!_queue.empty()) {
             char *str = (char *) _queue.back().c_str();
             int str_len = _queue.back().size();
-            printf("MessageQueue :%s",str);
-            for(int i = 0;i<len;i++){
-                send(g_events[i].fd,str,str_len,0);
+            printf("MessageQueue :%s", str);
+            for (int i = 0; i < len; i++) {
+                int fd = g_events[i].fd;
+                if (g_events[i].status == 0) continue;
+                send(fd, str, str_len, 0);
             }
             _queue.pop();
         }
