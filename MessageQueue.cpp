@@ -8,7 +8,7 @@
 void MessageQueue::push(char str[]) {
     lock_guard<mutex> lock(_mutex);
 //    std::lock_guard<std::mutex> guard(g_pages_mutex);
-    _queue.push(str);
+    redis.pushMessageQueue(str);
     printf("添加成功\n");
 }
 
@@ -20,16 +20,14 @@ void MessageQueue::run() {
 void MessageQueue::sendstr() {
     for (;;) {
         lock_guard<mutex> lock(_mutex);
-        if (!_queue.empty()) {
-            char *str = (char *) _queue.back().c_str();
-            int str_len = _queue.back().size();
-            printf("MessageQueue :%s", str);
+        int messageLen = redis.lenMessage();
+        if (messageLen != 0) {
+            string str = redis.popMessageQueue();
             for (int i = 0; i < len; i++) {
                 int fd = g_events[i].fd;
                 if (g_events[i].status == 0) continue;
-                send(fd, str, str_len, 0);
+                send(fd, str.c_str(), str.size(), 0);
             }
-            _queue.pop();
         }
     }
 }

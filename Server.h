@@ -26,7 +26,7 @@ class MessageQueue;
 
 typedef std::function<void(event_infor *)> EventCallback;
 #define BUFF_MAX 1024
-#define MAX_EVENTS 128
+#define MAX_EVENTS 1280
 struct event_infor {
     std::string ip;
     u_int port;
@@ -37,6 +37,7 @@ struct event_infor {
     char buff[BUFF_MAX];
     int events;
     epoll_event *epoll_infor;
+    string id;
 };
 
 class Server {
@@ -47,9 +48,10 @@ private:
     struct sockaddr_in serv_addr{};
     int epoll_fd;
     struct event_infor g_events[MAX_EVENTS + 1]{};
-    MessageQueue messageQueue;
+    MessageQueue *_messageQueue;
 public:
-    Server(char *ip, u_int port) : _ip(ip), _port(port) {
+    Server(char *ip, u_int port, const MessageQueue *messageQueue) : _ip(ip), _port(port), _messageQueue(
+            const_cast<MessageQueue *>(messageQueue)) {
         lfd = socket(AF_INET, SOCK_STREAM, 0);
         bzero(&serv_addr, sizeof(serv_addr));
         serv_addr.sin_addr.s_addr = inet_addr(_ip);
@@ -59,8 +61,8 @@ public:
         bind(lfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
         listen(lfd, 128);
         epoll_fd = epoll_create(128);
-        messageQueue.init(g_events, MAX_EVENTS);
-        messageQueue.run();
+        _messageQueue->init(g_events, MAX_EVENTS);
+        _messageQueue->run();
     }
 
 
