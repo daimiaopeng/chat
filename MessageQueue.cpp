@@ -9,7 +9,7 @@ void MessageQueue::push(char str[]) {
     lock_guard<mutex> lock(_mutex);
 //    std::lock_guard<std::mutex> guard(g_pages_mutex);
     redis.pushMessageQueue(str);
-    printf("添加成功\n");
+    LOG(INFO) << "添加成功";
 }
 
 void MessageQueue::run() {

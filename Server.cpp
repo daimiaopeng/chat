@@ -61,7 +61,8 @@ void Server::acceptconn(event_infor *infor) {
         if (errno != EAGAIN && errno != EINTR) {
             sleep(1);
         }
-        printf("%s:accept,%s\n", __func__, strerror(errno));
+//        LOG(ERROR)<<("%s:accept,%s\n", __func__, strerror(errno));
+        LOG(ERROR)<<"连接失败";
         return;
     }
     int i = 0;
@@ -69,7 +70,7 @@ void Server::acceptconn(event_infor *infor) {
         if (g_events[i].status == 0) break;
         if (i == MAX_EVENTS) // 超出连接数上限
         {
-            printf("%s: max connect limit[%d]\n", __func__, MAX_EVENTS);
+            LOG(INFO)<<__func__<<"max connect limit "<<MAX_EVENTS;
             break;
         }
     }
@@ -79,7 +80,7 @@ void Server::acceptconn(event_infor *infor) {
     cli_event_infor->ip = inet_ntoa(socket_addr.sin_addr);
     cli_event_infor->readCallback = [&](event_infor *infor) { recvdata(infor); };
     cli_event_infor->writeCallback = [&](event_infor *infor) { senddata(infor); };
-    printf("%s连接成功\n", cli_event_infor->ip.c_str());
+    LOG(INFO)<<cli_event_infor->ip<<" 连接成功\n";
 //    eventadd(EPOLLOUT, cli_event_infor);
     eventadd(EPOLLIN, cli_event_infor);
 
@@ -91,14 +92,16 @@ void Server::recvdata(event_infor *infor) {
     int n = recv(infor->fd, infor->buff, BUFF_MAX - 1, 0);
     if (n > 0) { //收到的数据
         infor->buff[n] == '\0';
-        printf("%s [%d]发来一条消息: %s\n", infor->ip.c_str(), infor->fd, infor->buff);
+        LOG(INFO)<<infor->ip<<"发来一条消息: "<<infor->buff;
+//        printf("%s [%d]发来一条消息: %s\n", infor->ip.c_str(), infor->fd, infor->buff);
         //添加到消息队列
         _messageQueue->push(infor->buff);
     } else if (n == 0) {
         close(infor->fd);
     } else {
         close(infor->fd);
-        printf("recv[fd=%d] error[%d]:%s\n", infor->fd, errno, strerror(errno));
+        LOG(ERROR)<<"接收数据失败";
+//        printf("recv[fd=%d] error[%d]:%s\n", infor->fd, errno, strerror(errno));
     }
     bzero(infor->buff, BUFF_MAX - 1);
 //    while ((n = read(infor->fd, buff, BUFF_MAX-1)) > 1) {
