@@ -25,16 +25,16 @@ public:
         if (conn->err) printf("connection error:%s\n", conn->errstr);
         redisReply *reply = static_cast<redisReply *>(redisCommand(conn, "AUTH %s", passwd.c_str()));
         if (reply->type == REDIS_REPLY_ERROR) {
-            LOG(INFO)<<"Redis认证失败！";
+            LOG(INFO) << "Redis认证失败！";
         } else {
-            LOG(INFO)<<"Redis认证成功！";
+            LOG(INFO) << "Redis认证成功！";
         }
         freeReplyObject(reply);
     };
 
     Redis(string ip, u_int port) : ip(ip), port(port) {
         conn = redisConnect(ip.c_str(), port);
-        if (conn->err) LOG(ERROR) <<"connection error: "<<conn->errstr;
+        if (conn->err) LOG(ERROR) << "connection error: " << conn->errstr;
     };
 
     void setJson(json json_str);

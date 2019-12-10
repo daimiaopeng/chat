@@ -20,6 +20,7 @@
 #include <memory>
 #include <future>
 #include "glog/logging.h"
+
 struct event_infor;
 
 class MessageQueue;
@@ -57,7 +58,7 @@ public:
         serv_addr.sin_addr.s_addr = inet_addr(_ip);
         serv_addr.sin_port = htons(_port);
         serv_addr.sin_family = AF_INET;
-        LOG(INFO) <<"Using ip: "<<_ip<<" port: "<<_port;
+        LOG(INFO) << "Using ip: " << _ip << " port: " << _port;
         bind(lfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
         listen(lfd, 128);
         epoll_fd = epoll_create(128);
