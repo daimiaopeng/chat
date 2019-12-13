@@ -20,6 +20,8 @@
 #include <memory>
 #include <future>
 #include "glog/logging.h"
+#include <vector>
+#include<algorithm>
 
 struct event_infor;
 

@@ -13,9 +13,10 @@ void Redis::setJson(json json) {
 
 }
 
-void Redis::pushMessageQueue(string message) {
-    string str = "RPUSH messageQueue " + message;
-    redisReply *reply = static_cast<redisReply *>(redisCommand(conn, str.c_str()));
+void Redis::pushMessageQueue(const string &message) {
+    // 注意转义
+    redisReply *reply = static_cast<redisReply *>(redisCommand(conn, "RPUSH messageQueue %s", message.c_str()));
+    cout << reply->integer;
     freeReplyObject(reply);
 }
 
@@ -32,4 +33,46 @@ string Redis::popMessageQueue() {
     string str = reply->str;
     freeReplyObject(reply);
     return str;
+}
+
+string Redis::getName(int fd) {
+    redisReply *reply = static_cast<redisReply *>(redisCommand(conn, string("get " + to_string(fd)).c_str()));
+    string str;
+    if (reply->integer == 0) {
+        str = "";
+    }
+    str = reply->str;
+    freeReplyObject(reply);
+    return str;
+}
+
+void Redis::setName(int fd, const string &name) {
+    redisReply *reply = static_cast<redisReply *>(redisCommand(conn,
+                                                               string("set " + name + " " + to_string(fd)).c_str()));
+    //name传进来"root\n" 预期"root"
+//    if (reply->integer !=0){
+//        LOG(INFO) << "设置名字：" << name<<" fd:"<<fd;
+//
+//    }else{
+//        LOG(INFO) << "失败 设置名字：" << name<<" fd:"<<fd;
+//    }
+    freeReplyObject(reply);
+}
+
+
+void Redis::delName(int fd) {
+    redisReply *reply = static_cast<redisReply *>(redisCommand(conn, string("del " + to_string(fd)).c_str()));
+    freeReplyObject(reply);
+}
+
+int Redis::getFd(const string &name) {
+    redisReply *reply = static_cast<redisReply *>(redisCommand(conn, string("get " + name).c_str()));
+    string str = reply->str;
+//    if (reply->integer == 0) {
+//        str = "-1";
+//    } else{
+//        str = reply->str;
+//    }
+    freeReplyObject(reply);
+    return stoi(str);
 }

@@ -12,6 +12,7 @@
 #include <thread>
 #include <mutex>
 #include "Redis.h"
+//#include "MessageJson.h"
 
 using namespace std;
 
@@ -23,8 +24,10 @@ private:
     queue<string> _queue;
     event_infor *g_events;
     int len;
-    Redis redis;
     mutex _mutex;
+
+public:
+    Redis redis;
 public:
     MessageQueue(Redis redis) : redis(redis) {};
 
@@ -33,11 +36,16 @@ public:
         this->len = len;
     };
 
-    void push(char str[]);
+    void push(const string &str);
 
     void run();
 
     void sendstr();
+
+    void sendMessage(const string &str);
+
+protected:
+    void send1(int fd, string &str);
 };
 
 

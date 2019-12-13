@@ -882,11 +882,11 @@ namespace nlohmann {
     (JSON_HEDLEY_TI_VERSION_CHECK(7, 3, 0) && defined(__TI_GNU_ATTRIBUTE_SUPPORT__)) || \
     (JSON_HEDLEY_SUNPRO_VERSION_CHECK(5, 15, 0) && defined(__cplusplus)) || \
     JSON_HEDLEY_PGI_VERSION_CHECK(17, 10, 0)
-                                                                                                                        #define JSON_HEDLEY_WARN_UNUSED_RESULT __attribute__((__warn_unused_result__))
+#define JSON_HEDLEY_WARN_UNUSED_RESULT __attribute__((__warn_unused_result__))
 #elif defined(_Check_return_) /* SAL */
-    #define JSON_HEDLEY_WARN_UNUSED_RESULT _Check_return_
+#define JSON_HEDLEY_WARN_UNUSED_RESULT _Check_return_
 #else
-    #define JSON_HEDLEY_WARN_UNUSED_RESULT
+#define JSON_HEDLEY_WARN_UNUSED_RESULT
 #endif
 
 #if defined(JSON_HEDLEY_SENTINEL)
@@ -18260,8 +18260,8 @@ Format](http://rfc7159.net/rfc7159)
 #ifdef JSON_HAS_CPP_17
             return m_value.array->emplace_back(std::forward<Args>(args)...);
 #else
-                                                                                                                                    m_value.array->emplace_back(std::forward<Args>(args)...);
-        return m_value.array->back();
+            m_value.array->emplace_back(std::forward<Args>(args)...);
+            return m_value.array->back();
 #endif
         }
 

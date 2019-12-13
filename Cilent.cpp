@@ -1,30 +1,44 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <boost/asio.hpp>
+#include "json.hpp"
+#include <thread>
+
+using boost::asio::ip::tcp;
+
+enum {
+    max_length = 1024
+};
+using namespace std;
 
 int main() {
-    //创建套接字
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    boost::asio::io_context io_context;
+    tcp::socket s(io_context);
+    tcp::resolver resolver(io_context);
+    boost::asio::connect(s, resolver.resolve("127.0.0.1", "6666"));
 
-    //向服务器（特定的IP和端口）发起请求
-    struct sockaddr_in serv_addr;
-    memset(&serv_addr, 0, sizeof(serv_addr));  //每个字节都用0填充
-    serv_addr.sin_family = AF_INET;  //使用IPv4地址
-    serv_addr.sin_addr.s_addr = inet_addr("127.0.0.1");  //具体的IP地址
-    serv_addr.sin_port = htons(6668);  //端口
-    connect(sock, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
-    //读取服务器传回的数据
-    char buffer[40]{};
-    write(sock, "da", sizeof(3));
-    write(sock, "wqe", sizeof(4));
+    thread t([&]() { io_context.run(); });
+    t.detach();
+    std::cout << "Enter message: ";
+    char request[max_length];
+    std::cin.getline(request, max_length);
+    size_t request_length = std::strlen(request);
+//    boost::asio::write(s, boost::asio::buffer(request, request_length));
+    for (;;) {
+        char reply[max_length]{};
 
-//    read(sock, buffer, sizeof(buffer)-1);
-    printf("Message form server: %s\n", buffer);
-    //关闭套接字
-    close(sock);
+        size_t reply_length = s.read_some(boost::asio::buffer(reply, request_length));
+        if (reply_length == 1) {
+            continue;
+        }
+        std::cout << "len = " << reply_length;
+        std::cout << " Reply is: ";
+        std::cout << reply;
+//        std::cout.write(reply, reply_length);
+        std::cout << "\n";
+    }
+
 
     return 0;
 }

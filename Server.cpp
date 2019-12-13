@@ -10,7 +10,6 @@ using namespace std::placeholders;
 void Server::run() {
     initsocket();
 
-
     struct epoll_event events[20];
     for (;;) {
         int nums_epoll = epoll_wait(epoll_fd, events, 128, -1);
@@ -95,7 +94,17 @@ void Server::recvdata(event_infor *infor) {
         LOG(INFO) << infor->ip << "发来一条消息: " << infor->buff;
 //        printf("%s [%d]发来一条消息: %s\n", infor->ip.c_str(), infor->fd, infor->buff);
         //添加到消息队列
-        _messageQueue->push(infor->buff);
+
+        //
+        string str(infor->buff);
+        int index = str.find_first_of(" ");
+        string name = str.substr(0, index);
+        string message = str.substr(index + 1, str.length());
+        if (name == "setname") {
+            _messageQueue->redis.setName(infor->fd, message.substr(0, message.length() - 1));
+        } else {
+            _messageQueue->push(infor->buff);
+        }
     } else if (n == 0) {
         close(infor->fd);
     } else {

@@ -5,15 +5,16 @@
 #ifndef CHAT_PROJECT_REDIS_H
 #define CHAT_PROJECT_REDIS_H
 
-#include <string>
 #include "json.hpp"
 #include <hiredis/hiredis.h>
-#include <string>
 #include "glog/logging.h"
+#include <iostream>
+#include <boost/regex.hpp>
 
 using json = nlohmann::json;
 using namespace std;
 
+//using boost::regex;
 class Redis {
 private:
     string ip;
@@ -39,13 +40,23 @@ public:
 
     void setJson(json json_str);
 
-    void pushMessageQueue(string message);
+    void pushMessageQueue(const string &message);
+
+    string getName(int fd);
+
+    int getFd(const string &name);
+
+    void setName(int fd, const string &name);
+
+    void delName(int fd);
 
     redisContext *getConn() { return conn; };
 
     int lenMessage();
 
     string popMessageQueue();
+
+    void setFd(int fd, const string &name);
 };
 
 
