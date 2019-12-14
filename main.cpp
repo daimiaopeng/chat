@@ -5,6 +5,7 @@
 
 using namespace std;
 
+//INFO: 0, WARNING: 1, ERROR: 2 FATAL: 3;
 void initLog() {
     google::InitGoogleLogging("serverLog");    //初始化log的名字为daqing
     google::SetLogDestination(google::GLOG_INFO, "../log/");    //设置输出日志的文件夹，文件夹必须已经存在
@@ -19,10 +20,9 @@ void initLog() {
 int main() {
     initLog();
     Redis redis("127.0.0.1", 6379);
-//    Redis redis("120.77.204.248", 6379,"102030123");
+//    Redis redis("120.77.204.248", 6379,"");
     MessageQueue messageQueue(redis);
-    Server server("0.0.0.0", 6666, &messageQueue);
-
+    Server server("0.0.0.0", 6668, &messageQueue);
     server.run();
 
     return 0;

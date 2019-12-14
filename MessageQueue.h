@@ -12,6 +12,7 @@
 #include <thread>
 #include <mutex>
 #include "Redis.h"
+#include "MessageJson.h"
 //#include "MessageJson.h"
 
 using namespace std;

@@ -52,6 +52,10 @@ public:
 
     redisContext *getConn() { return conn; };
 
+    int login(const string &name, const string &passwd);
+
+    int registered(const string &name, const string &passwd);
+
     int lenMessage();
 
     string popMessageQueue();

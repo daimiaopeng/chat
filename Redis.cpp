@@ -16,7 +16,7 @@ void Redis::setJson(json json) {
 void Redis::pushMessageQueue(const string &message) {
     // 注意转义
     redisReply *reply = static_cast<redisReply *>(redisCommand(conn, "RPUSH messageQueue %s", message.c_str()));
-    cout << reply->integer;
+    LOG(WARNING) << "添加成功 :" << message;
     freeReplyObject(reply);
 }
 
@@ -31,6 +31,7 @@ int Redis::lenMessage() {
 string Redis::popMessageQueue() {
     redisReply *reply = static_cast<redisReply *>(redisCommand(conn, "LPOP  messageQueue"));
     string str = reply->str;
+    LOG(WARNING) << "从队列取出：" << str;
     freeReplyObject(reply);
     return str;
 }
@@ -67,12 +68,40 @@ void Redis::delName(int fd) {
 
 int Redis::getFd(const string &name) {
     redisReply *reply = static_cast<redisReply *>(redisCommand(conn, string("get " + name).c_str()));
-    string str = reply->str;
-//    if (reply->integer == 0) {
-//        str = "-1";
-//    } else{
-//        str = reply->str;
-//    }
+    string str;
+    if (reply->str == nullptr) {
+        str = "-1";
+    } else {
+        str = reply->str;
+    }
     freeReplyObject(reply);
     return stoi(str);
+}
+
+int Redis::login(const string &name, const string &passwd) {
+    redisReply *reply = static_cast<redisReply *>(redisCommand(conn, string("get " + name).c_str()));
+    if (reply->str == nullptr) {
+        LOG(INFO) << name + " 该用户没有注册";
+        return 0;
+    }
+    string str = reply->str;
+    if (passwd == str) {
+        LOG(INFO) << name + " 登录成功";
+        return 1;
+    } else {
+        LOG(INFO) << name + " 登录密码错误";
+        return 0;
+    }
+}
+
+int Redis::registered(const string &name, const string &passwd) {
+    redisReply *reply = static_cast<redisReply *>(redisCommand(conn, string("get " + name).c_str()));
+    if (reply->str != nullptr) {
+        LOG(INFO) << name + " 该用户已注册";
+        return 0;
+    }
+    reply = static_cast<redisReply *>(redisCommand(conn, string("set " + name + " " + passwd).c_str()));
+    LOG(ERROR) << name + " 注册成功";
+    freeReplyObject(reply);
+    return 1;
 }

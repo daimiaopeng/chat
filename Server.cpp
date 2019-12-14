@@ -109,7 +109,8 @@ void Server::recvdata(event_infor *infor) {
         close(infor->fd);
     } else {
         close(infor->fd);
-        LOG(ERROR) << "接收数据失败";
+//        LOG(ERROR) << "接收数据失败";
+        LOG(INFO) << "fd: " << infor->fd << " 连接关闭";
 //        printf("recv[fd=%d] error[%d]:%s\n", infor->fd, errno, strerror(errno));
     }
     bzero(infor->buff, BUFF_MAX - 1);

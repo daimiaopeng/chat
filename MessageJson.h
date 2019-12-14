@@ -8,31 +8,33 @@
 #include "json.hpp"
 #include <string>
 #include <iostream>
+#include "Redis.h"
 
 using json = nlohmann::json;
 using namespace std;
 
 class MessageJson {
 public:
-    int type;
-    string sender;
-    string receiver;
-    json toJson;
-    json jsontostr;
+
+    int code;
+    string type;
+    json _json;
+    Redis redis;
 public:
 //    MessageJson(int type, string send, string receive) : type(type), send(sender), receive(receive) {
 //        toJson = {{"type", type},{"data", {{"send", send},{"receive", receive}}}};
 //    }
-    MessageJson(string str) {
-        jsontostr = json::parse(str);
-        type = jsontostr["type"];
-        if (type == 1) {
-            _set();
-        }
+    MessageJson(const Redis &redis, const string &str) : redis(redis) {
+        _json = json::parse(str);
+
     }
 
+public:
+    string code0();
+
+    string res();
+
 protected:
-    void _set();
 //    json tostr();
 
 
