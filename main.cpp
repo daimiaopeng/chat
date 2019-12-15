@@ -22,7 +22,7 @@ int main() {
     Redis redis("127.0.0.1", 6379);
 //    Redis redis("120.77.204.248", 6379,"");
     MessageQueue messageQueue(redis);
-    Server server("0.0.0.0", 6668, &messageQueue);
+    Server server("0.0.0.0", 6666, &messageQueue);
     server.run();
 
     return 0;

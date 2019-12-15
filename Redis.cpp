@@ -78,19 +78,21 @@ int Redis::getFd(const string &name) {
     return stoi(str);
 }
 
-int Redis::login(const string &name, const string &passwd) {
+string Redis::login(const string &name, const string &passwd) {
     redisReply *reply = static_cast<redisReply *>(redisCommand(conn, string("get " + name).c_str()));
     if (reply->str == nullptr) {
         LOG(INFO) << name + " 该用户没有注册";
-        return 0;
+        return "";
     }
     string str = reply->str;
     if (passwd == str) {
         LOG(INFO) << name + " 登录成功";
-        return 1;
+        string token = "test123ihsdfasdf";
+        setToken(token, name);
+        return token;
     } else {
         LOG(INFO) << name + " 登录密码错误";
-        return 0;
+        return "";
     }
 }
 
@@ -101,7 +103,32 @@ int Redis::registered(const string &name, const string &passwd) {
         return 0;
     }
     reply = static_cast<redisReply *>(redisCommand(conn, string("set " + name + " " + passwd).c_str()));
-    LOG(ERROR) << name + " 注册成功";
+    LOG(INFO) << name + " 注册成功";
     freeReplyObject(reply);
     return 1;
+}
+
+string Redis::getName(const string &token) {
+    redisReply *reply = static_cast<redisReply *>(redisCommand(conn, string("get " + token).c_str()));
+    string str;
+    if (reply->integer == 0) {
+        str = "";
+    }
+    str = reply->str;
+    LOG(INFO) << token + "(token->name)" << str;
+    freeReplyObject(reply);
+    return str;
+}
+
+void Redis::setToken(const string &token, const string &name) {
+    redisReply *reply = static_cast<redisReply *>(redisCommand(conn, string("set " + token + " " + name).c_str()));
+    LOG(INFO) << name + " (name->token)" << token;
+    //name传进来"root\n" 预期"root"
+//    if (reply->integer !=0){
+//        LOG(INFO) << "设置名字：" << name<<" fd:"<<fd;
+//
+//    }else{
+//        LOG(INFO) << "失败 设置名字：" << name<<" fd:"<<fd;
+//    }
+    freeReplyObject(reply);
 }

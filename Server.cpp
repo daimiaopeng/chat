@@ -106,9 +106,12 @@ void Server::recvdata(event_infor *infor) {
             _messageQueue->push(infor->buff);
         }
     } else if (n == 0) {
+        LOG(INFO) << "fd: " << infor->fd << " 连接关闭";
         close(infor->fd);
+        infor->status = 0;
     } else {
         close(infor->fd);
+        infor->status = 0;
 //        LOG(ERROR) << "接收数据失败";
         LOG(INFO) << "fd: " << infor->fd << " 连接关闭";
 //        printf("recv[fd=%d] error[%d]:%s\n", infor->fd, errno, strerror(errno));

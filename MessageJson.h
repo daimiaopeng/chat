@@ -26,7 +26,6 @@ public:
 //    }
     MessageJson(const Redis &redis, const string &str) : redis(redis) {
         _json = json::parse(str);
-
     }
 
 public:
@@ -53,6 +52,7 @@ protected:
 //     <<endl;
 
 
+    string code1();
 };
 
 

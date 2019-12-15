@@ -31,11 +31,18 @@ void MessageQueue::sendstr() {
 }
 
 void MessageQueue::sendMessage(const string &str) {
-    //bug 例如adswer 没有分隔符程序异常退出
-    MessageJson messageJson(redis, str);
-    string writeData = messageJson.res();
+    string writeData;
+    try {
+        MessageJson messageJson(redis, str);
+        writeData = messageJson.res();
+    }
+    catch (std::exception &e) {
+        LOG(ERROR) << "caught exception: " << e.what();
+        return;
+    }
     for (int i = 0; i < len; i++) {
         if (g_events[i].status == 0) continue;
+        LOG(INFO) << "发送fd：" << g_events[i].fd;
         send(g_events[i].fd, writeData.c_str(), writeData.size(), 0);
     }
 //    int index = str.find_first_of(" ");

@@ -44,6 +44,8 @@ public:
 
     string getName(int fd);
 
+    string getName(const string &token);
+
     int getFd(const string &name);
 
     void setName(int fd, const string &name);
@@ -52,7 +54,7 @@ public:
 
     redisContext *getConn() { return conn; };
 
-    int login(const string &name, const string &passwd);
+    string login(const string &name, const string &passwd);
 
     int registered(const string &name, const string &passwd);
 
@@ -60,7 +62,10 @@ public:
 
     string popMessageQueue();
 
+
     void setFd(int fd, const string &name);
+
+    void setToken(const string &token, const string &name);
 };
 
 
