@@ -9,9 +9,7 @@ link_libraries(/usr/local/lib/libhiredis.a)
 link_libraries(/usr/local/lib/libglog.so)
 include_directories(${Boost_INCLUDE_DIR})
 
-add_executable(chat_server main.cpp Server.cpp MessageQueue.cpp MessageQueue.h Redis.cpp Redis.h MessageJson.cpp MessageJson.h Send.cpp Send.h)
-add_executable(chat_cilent Cilent.cpp)
+add_executable(chat_server main.cpp Server.cpp MessageQueue.cpp MessageQueue.h Redis.cpp Redis.h MessageJson.cpp MessageJson.h event_infor.h)
 add_executable(chat_test test.cpp Redis.cpp MessageJson.cpp)
 
 target_link_libraries(chat_server pthread hiredis glog)
-target_link_libraries(chat_cilent pthread boost_system boost_thread boost_coroutine)

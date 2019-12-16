@@ -6,12 +6,16 @@
 #define CHAT_PROJECT_MESSAGEJSON_H
 
 #include "json.hpp"
-#include <string>
-#include <iostream>
 #include "Redis.h"
+#include "event_infor.h"
 
 using json = nlohmann::json;
 using namespace std;
+struct event_infor;
+
+class Redis;
+
+class MessageQueue;
 
 class MessageJson {
 public:
@@ -29,28 +33,14 @@ public:
     }
 
 public:
-    string code0();
+    string messageNew(event_infor *infor);
 
     string res();
 
 protected:
-//    json tostr();
+    string code0();
 
-
-
-//    json j2 = R"(
-//      {
-//            "type": type,
-//            "data": {
-//            "send": true,
-//            "receive": 3.141
-//          }
-//        }
-//    )"_json;
-////    string a = "set foo "+j2.dump();
-//    cout<<    j2["happy"]
-//     <<endl;
-
+    string code2();
 
     string code1();
 };

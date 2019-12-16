@@ -76,6 +76,7 @@ void Server::acceptconn(event_infor *infor) {
     event_infor *cli_event_infor = &g_events[i];
     cli_event_infor->fd = cfd;
     cli_event_infor->status = 1;
+    cli_event_infor->port = socket_addr.sin_port;
     cli_event_infor->ip = inet_ntoa(socket_addr.sin_addr);
     cli_event_infor->readCallback = [&](event_infor *infor) { recvdata(infor); };
     cli_event_infor->writeCallback = [&](event_infor *infor) { senddata(infor); };
@@ -92,19 +93,7 @@ void Server::recvdata(event_infor *infor) {
     if (n > 0) { //收到的数据
         infor->buff[n] == '\0';
         LOG(INFO) << infor->ip << "发来一条消息: " << infor->buff;
-//        printf("%s [%d]发来一条消息: %s\n", infor->ip.c_str(), infor->fd, infor->buff);
-        //添加到消息队列
-
-        //
-        string str(infor->buff);
-        int index = str.find_first_of(" ");
-        string name = str.substr(0, index);
-        string message = str.substr(index + 1, str.length());
-        if (name == "setname") {
-            _messageQueue->redis.setName(infor->fd, message.substr(0, message.length() - 1));
-        } else {
-            _messageQueue->push(infor->buff);
-        }
+        _messageQueue->push(infor->buff, infor);
     } else if (n == 0) {
         LOG(INFO) << "fd: " << infor->fd << " 连接关闭";
         close(infor->fd);

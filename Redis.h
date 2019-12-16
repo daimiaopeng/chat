@@ -40,6 +40,8 @@ public:
 
     void setJson(json json_str);
 
+    void init();
+
     void pushMessageQueue(const string &message);
 
     string getName(int fd);

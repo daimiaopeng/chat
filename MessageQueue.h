@@ -13,10 +13,11 @@
 #include <mutex>
 #include "Redis.h"
 #include "MessageJson.h"
-//#include "MessageJson.h"
+#include "event_infor.h"
 
 using namespace std;
 
+class Server;
 
 struct event_infor;
 
@@ -37,7 +38,7 @@ public:
         this->len = len;
     };
 
-    void push(const string &str);
+    void push(const string &str, event_infor *infor);
 
     void run();
 

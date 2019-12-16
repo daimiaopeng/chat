@@ -12,6 +12,11 @@ string MessageJson::res() {
         case 1:
             type = "registered";
             return code1();
+        case 2:
+            type = "sendALl";
+            return code2();
+        default:
+            return "";
     }
     return "string MessageJson::res()";
 }
@@ -34,6 +39,7 @@ string MessageJson::code0() {
     return reJsonStr.dump();
 }
 
+
 string MessageJson::code1() {
 //    {"code":1,"data":{"passwd":"123412356","name":"qwieuy"}}
     string name = _json["data"]["name"];
@@ -50,6 +56,44 @@ string MessageJson::code1() {
                  {"data", {{"message", message}}}};
 
     return reJsonStr.dump();
+}
+
+string MessageJson::code2() {
+    return "接口正在开发中";
+}
+
+string MessageJson::messageNew(event_infor *infor) {
+    //认证后为消息设置其他信息
+//    {"code":0,"token":"qwe","data":{"passwd":"qwe","name":"qwe"}}
+//    {"code":2,"token":"qwe","data":{"passwd":"qwe","name":"qwe"}}
+//    {"code":0,"data":{"passwd":"qwe","name":"qwe"}}
+//    {"code":1,"data":{"passwd":"qwe","name":"qwqe"}}
+//    {"code":1,"data":{"passwd":"qwse","name":"qwqe"}}
+    auto token = _json.find("token");
+    string name;
+    if (token == _json.end()) {
+        //没找到token
+        int code = _json["code"];
+        if (code == 0 || code == 1) {
+            _json["token"] = "None";
+        }
+    } else {
+        name = redis.getName(token->dump());
+    }
+    if (name == "") {
+        //认证失败sender = None
+        _json["sender"] = "None";
+        name = "None";
+    } else {
+        //认证成功
+        redis.setName(infor->fd, name);
+        _json["sender"] = name;
+    }
+    _json["ip"] = infor->ip;
+    _json["port"] = infor->port;
+    _json["status"] = infor->status;
+    LOG(INFO) << "set sender name=" << name << " ip=" << infor->ip << " port=" << infor->port;
+    return _json.dump();
 }
 
 

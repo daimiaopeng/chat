@@ -3,14 +3,18 @@
 //
 
 #include "MessageQueue.h"
-#include "Server.h"
 
-void MessageQueue::push(const string &str) {
+void MessageQueue::push(const string &str, event_infor *infor) {
     lock_guard<mutex> lock(_mutex);
-//    MessageJson messageJson(str);
-//    cout<<messageJson.jsontostr.dump()<<endl;
-//    std::lock_guard<std::mutex> guard(g_pages_mutex);
-    redis.pushMessageQueue(str);
+    try {
+        MessageJson messageJson(redis, str);
+        string messageNew = messageJson.messageNew(infor);
+        redis.pushMessageQueue(messageNew);
+    }
+    catch (std::exception &e) {
+        LOG(ERROR) << "接受消息格式错误caught exception: " << e.what();
+        return;
+    }
 }
 
 void MessageQueue::run() {
