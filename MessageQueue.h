@@ -48,6 +48,8 @@ public:
     void sendMessage(const string &str);
 
 protected:
+    void _sendPeople(int fd, const string &writeData);
+
     void send1(int fd, string &str);
 };
 

@@ -22,7 +22,7 @@ class MessageJson;
 
 class Server {
 private:
-    char *_ip;
+    string _ip;
     int lfd;
     u_int _port;
     struct sockaddr_in serv_addr{};
@@ -30,11 +30,11 @@ private:
     struct event_infor g_events[MAX_EVENTS + 1]{};
     MessageQueue *_messageQueue;
 public:
-    Server(char *ip, u_int port, const MessageQueue *messageQueue) : _ip(ip), _port(port), _messageQueue(
+    Server(string ip, u_int port, const MessageQueue *messageQueue) : _ip(ip), _port(port), _messageQueue(
             const_cast<MessageQueue *>(messageQueue)) {
         lfd = socket(AF_INET, SOCK_STREAM, 0);
         bzero(&serv_addr, sizeof(serv_addr));
-        serv_addr.sin_addr.s_addr = inet_addr(_ip);
+        serv_addr.sin_addr.s_addr = inet_addr(_ip.c_str());
         serv_addr.sin_port = htons(_port);
         serv_addr.sin_family = AF_INET;
         LOG(INFO) << "Using ip: " << _ip << " port: " << _port;
