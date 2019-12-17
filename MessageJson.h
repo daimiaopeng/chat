@@ -33,6 +33,7 @@ public:
             _json = json::parse(str);
             _isParseSuccess = true;
         }
+        //test
         catch (std::exception &e) {
             _isParseSuccess = false;
             LOG(ERROR) << "消息格式错误: " << e.what();
