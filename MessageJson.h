@@ -19,7 +19,7 @@ class MessageQueue;
 
 class MessageJson {
 public:
-
+    bool _isParseSuccess;
     int code;
     string type;
     json _json;
@@ -29,14 +29,24 @@ public:
 //        toJson = {{"type", type},{"data", {{"send", send},{"receive", receive}}}};
 //    }
     MessageJson(const Redis &redis, const string &str) : redis(redis) {
-        _json = json::parse(str);
+        try {
+            _json = json::parse(str);
+            _isParseSuccess = true;
+        }
+        catch (std::exception &e) {
+            _isParseSuccess = false;
+            LOG(ERROR) << "消息格式错误: " << e.what();
+        }
     }
 
 public:
     string messageNew(event_infor *infor);
 
+    bool isParseSuccess();
+
     string res();
 
+    json getJson();
 protected:
     string code0();
 

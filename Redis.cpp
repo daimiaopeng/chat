@@ -7,7 +7,7 @@
 
 void Redis::pushMessageQueue(const string &message) {
     redisReply *reply = static_cast<redisReply *>(redisCommand(conn, "RPUSH messageQueue %s", message.c_str()));
-    LOG(WARNING) << "添加成功 :" << message;
+    LOG(WARNING) << "添加到消息队列 :" << message;
     freeReplyObject(reply);
 }
 
@@ -22,7 +22,7 @@ int Redis::lenMessage() {
 string Redis::popMessageQueue() {
     redisReply *reply = static_cast<redisReply *>(redisCommand(conn, "LPOP  messageQueue"));
     string str = reply->str;
-    LOG(INFO) << "从队列取出：" << str;
+    LOG(INFO) << "从消息队列取出：" << str;
     freeReplyObject(reply);
     return str;
 }

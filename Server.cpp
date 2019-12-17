@@ -92,7 +92,7 @@ void Server::recvdata(event_infor *infor) {
     int n = recv(infor->fd, infor->buff, BUFF_MAX - 1, 0);
     if (n > 0) { //收到的数据
         infor->buff[n] == '\0';
-        LOG(INFO) << infor->ip << "发来一条消息: " << infor->buff;
+        LOG(INFO) << infor->ip << " 发来一条消息: " << infor->buff;
         _messageQueue->push(infor->buff, infor);
     } else if (n == 0) {
         LOG(INFO) << "fd: " << infor->fd << " 连接关闭";

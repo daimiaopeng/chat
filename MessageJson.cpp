@@ -4,20 +4,26 @@
 #include "MessageJson.h"
 
 string MessageJson::res() {
-    code = _json["code"];
-    switch (code) {
-        case 0:
-            type = "login";
-            return code0();
-        case 1:
-            type = "registered";
-            return code1();
-        case 2:
-            type = "sendALl";
-            return code2();
-        default:
-            return "";
+    try {
+        code = _json["code"];
+        switch (code) {
+            case 0:
+                type = "login";
+                return code0();
+            case 1:
+                type = "registered";
+                return code1();
+            case 2:
+                type = "sendALl";
+                return code2();
+            default:
+                return "";
+        }
     }
+    catch (std::exception &e) {
+        return "错误";
+    }
+
     return "string MessageJson::res()";
 }
 
@@ -47,14 +53,17 @@ string MessageJson::code1() {
     int res = redis.registered(name, passwd);
     string message;
     json reJsonStr;
+    int isCode;
     if (res == 1) {
+        isCode = 1;
         message = "注册成功";
     } else {
-        message = "注册失败";
+        isCode = 0;
+        message = "注册失败,该用户名被已注册";
     }
     reJsonStr = {{"code", code},
                  {"data", {{"message", message}}}};
-
+    reJsonStr["isCode"] = isCode;
     return reJsonStr.dump();
 }
 
@@ -89,11 +98,24 @@ string MessageJson::messageNew(event_infor *infor) {
         redis.setName(infor->fd, name);
         _json["sender"] = name;
     }
+
     _json["ip"] = infor->ip;
+    _json["fd"] = infor->fd;
     _json["port"] = infor->port;
     _json["status"] = infor->status;
+    //暂时receiver = sender
+    _json["receiver"] = _json["sender"];
+
     LOG(INFO) << "set sender name=" << name << " ip=" << infor->ip << " port=" << infor->port;
     return _json.dump();
+}
+
+bool MessageJson::isParseSuccess() {
+    return _isParseSuccess;
+}
+
+json MessageJson::getJson() {
+    return _json;
 }
 
 

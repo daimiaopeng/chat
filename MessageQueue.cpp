@@ -6,14 +6,10 @@
 
 void MessageQueue::push(const string &str, event_infor *infor) {
     lock_guard<mutex> lock(_mutex);
-    try {
-        MessageJson messageJson(redis, str);
+    MessageJson messageJson(redis, str);
+    if (messageJson.isParseSuccess() == true) {
         string messageNew = messageJson.messageNew(infor);
         redis.pushMessageQueue(messageNew);
-    }
-    catch (std::exception &e) {
-        LOG(ERROR) << "接受消息格式错误caught exception: " << e.what();
-        return;
     }
 }
 
@@ -35,20 +31,20 @@ void MessageQueue::sendstr() {
 }
 
 void MessageQueue::sendMessage(const string &str) {
-    string writeData;
-    try {
-        MessageJson messageJson(redis, str);
-        writeData = messageJson.res();
-    }
-    catch (std::exception &e) {
-        LOG(ERROR) << "caught exception: " << e.what();
+    MessageJson messageJson(redis, str);
+    if (messageJson.isParseSuccess() == false) {
         return;
     }
-    for (int i = 0; i < len; i++) {
-        if (g_events[i].status == 0) continue;
-        LOG(INFO) << "发送fd：" << g_events[i].fd;
-        send(g_events[i].fd, writeData.c_str(), writeData.size(), 0);
+    string writeData = messageJson.res();
+    int fd;
+    string receiver = messageJson.getJson()["receiver"];
+    if (receiver == "None") {
+        fd = messageJson.getJson()["fd"];
+    } else {
+        fd = redis.getFd(messageJson.getJson()["receiver"]);
     }
+    _sendPeople(fd, writeData);
+
 //    int index = str.find_first_of(" ");
 //    string name = str.substr(0, index);
 //    string message = str.substr(index + 1, str.length() - 1);
@@ -74,4 +70,12 @@ void MessageQueue::sendMessage(const string &str) {
 //            }
 //        }
 //    }
+}
+
+void MessageQueue::_sendPeople(int fd, const string &writeData) {
+    for (int i = 0; i < len; i++) {
+        if (g_events[i].status == 0 || g_events[i].fd != fd) continue;
+        LOG(INFO) << "发送fd：" << g_events[i].fd;
+        send(g_events[i].fd, writeData.c_str(), writeData.size(), 0);
+    }
 }
