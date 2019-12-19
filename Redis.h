@@ -22,6 +22,7 @@ private:
     string ip;
     u_int port;
     redisContext *conn;
+
 public:
     Redis(string ip, u_int port, string passwd) : ip(ip), port(port) {
         conn = redisConnect(ip.c_str(), port);
@@ -57,6 +58,8 @@ public:
     void delName(int fd);
 
     redisContext *getConn() { return conn; };
+
+    auto redisReply_ptr(void* reply);
 
     string login(const string &name, const string &passwd);
 
