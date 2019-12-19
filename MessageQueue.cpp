@@ -20,7 +20,7 @@ void MessageQueue::run() {
 
 void MessageQueue::sendstr() {
     for (;;) {
-        this_thread::sleep_for(chrono::milliseconds(100));
+        this_thread::sleep_for(chrono::milliseconds(10));
         lock_guard<mutex> lock(_mutex);
         int messageLen = redis.lenMessage();
         if (messageLen != 0) {

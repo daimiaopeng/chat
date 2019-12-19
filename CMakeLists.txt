@@ -10,6 +10,7 @@ link_libraries(/usr/local/lib/libglog.so)
 include_directories(${Boost_INCLUDE_DIR})
 
 add_executable(chat_server main.cpp Server.cpp MessageQueue.cpp MessageQueue.h Redis.cpp Redis.h MessageJson.cpp MessageJson.h event_infor.h)
-add_executable(chat_test test.cpp Redis.cpp MessageJson.cpp)
+add_executable(chat_test test/test.cpp Redis.cpp MessageJson.cpp)
+add_executable(client_test test/client.cpp)
 
 target_link_libraries(chat_server pthread hiredis glog)

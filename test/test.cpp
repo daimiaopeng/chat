@@ -7,8 +7,8 @@
 #define _GLIBCXX_USE_CXX11_ABI 1
 
 #include <iostream>
-#include "Redis.h"
-#include "MessageJson.h"
+#include "../Redis.h"
+#include "../MessageJson.h"
 
 using namespace std;
 

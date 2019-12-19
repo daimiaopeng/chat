@@ -10,6 +10,8 @@
 #include "glog/logging.h"
 #include <iostream>
 #include <boost/regex.hpp>
+#include <memory>
+
 
 using json = nlohmann::json;
 using namespace std;
