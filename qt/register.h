@@ -21,19 +21,12 @@ public:
 
     signals:
 
-            void
-    reg(QString
-    name,
-    QString passwd
-    );
+    void  reg(QString name,QString passwd);
 
 
-private
-    slots:
+private slots:
 
-            void
-
-    on_registerBut_clicked();
+    void on_registerBut_clicked();
 
     void code1(json _json);
 

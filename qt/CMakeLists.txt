@@ -15,7 +15,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #set(Boost_LIBRARY_DIR /usr/local/lib)
 
 #set(Qt5Widgets_DIR /home/daimiaopeng/Qt5.14.0/5.14.0/gcc_64/include/Qt5Widgets_DIR)
-set(Qt5_DIR /home/daimiaopeng/Qt5.14.0/5.14.0/gcc_64/lib/cmake/Qt5)
+#set(Qt5_DIR /home/daimiaopeng/Qt5.14.0/5.14.0/gcc_64/lib/cmake/Qt5)
 
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED Network)

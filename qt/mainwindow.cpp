@@ -7,17 +7,21 @@
 
 MainWindow::MainWindow(QWidget *parent, Socket *socket)
         : QMainWindow(parent), ui(new Ui::MainWindow) {
+    ui->setupUi(this);
     _socket = socket;
     QObject::connect(_socket, SIGNAL(code0(json)), this, SLOT(code0(json)));
     QObject::connect(this, SIGNAL(login(QString, QString)), _socket, SLOT(login(QString, QString)));
-    ui->setupUi(this);
+    connect(_socket->tcpSocket, SIGNAL(connected()), this, SLOT(connected()));
+    //connect(_socket->tcpSocket, SIGNAL(disconnected()), this, SLOT(linkError()));
     ui->usrLineEdit->setFocus();
 }
 
 MainWindow::~MainWindow() {
     delete ui;
 }
-
+void MainWindow::linkError(){
+    QMessageBox::warning(this, tr("Waring"), tr("连接失败"), QMessageBox::Yes);
+}
 void MainWindow::code0(json _json) {
     try {
         string message = _json["data"]["message"];
@@ -25,6 +29,7 @@ void MainWindow::code0(json _json) {
     } catch (std::exception &e) {
         qDebug() << e.what();
     }
+    _socket->token = token;
     goCilent(_json);
     qDebug() << "set token:" << token;
 }
@@ -32,11 +37,11 @@ void MainWindow::code0(json _json) {
 void MainWindow::goCilent(json jsonMessage) {
     string message = jsonMessage["data"]["message"];
     if (token != "") {
-        Client client;
-        QMessageBox::warning(this, tr("Waring"), message.c_str(), QMessageBox::Yes);
-        this->close();
-        client.exec();
-        qDebug() << "yes";
+        Client client(nullptr,_socket);
+        //QMessageBox::warning(this, tr("Waring"), message.c_str(), QMessageBox::Yes);
+         this->close();
+//        _socket->tcpSocket->readAll();
+         client.exec();
     } else {
         ui->pwdLineEdit->clear();
         ui->pwdLineEdit->setFocus();
@@ -50,6 +55,7 @@ void MainWindow::on_exitBtn_clicked() {
 
 
 void MainWindow::on_loginBtn_clicked() {
+
     QString name = ui->usrLineEdit->text();
     QString passwd = ui->pwdLineEdit->text();
     if (name == "") {
@@ -64,9 +70,19 @@ void MainWindow::on_loginBtn_clicked() {
 
 }
 
+void MainWindow::connected(){
+    QMessageBox::warning(this, tr("Waring"), tr("连接成功"), QMessageBox::Yes);
+    qDebug() << "connected1";
+}
 void MainWindow::on_registered_clicked() {
     Register reg(nullptr, _socket);
-
     reg.exec();
     qDebug() << "yes";
+}
+
+void MainWindow::on_linkBtn_clicked()
+{
+    QString ip = ui->ipLineEdit->text();
+    int port = ui->portLineEdit->text().toInt();
+    _socket->init(ip,port);
 }

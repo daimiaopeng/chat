@@ -30,20 +30,21 @@ public:
 public
     slots:
 
-            void
-
-    on_exitBtn_clicked();
+    void on_exitBtn_clicked();
 
     void on_loginBtn_clicked();
 
     void code0(json _json);
-
+    void linkError();
+    void connected();
 private
     slots:
 
             void
 
     on_registered_clicked();
+
+            void on_linkBtn_clicked();
 
 private:
     QString token;

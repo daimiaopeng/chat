@@ -33,12 +33,14 @@ public:
         } else {
             LOG(INFO) << "Redis认证成功！";
         }
+//        clearToken();
         freeReplyObject(reply);
     };
 
     Redis(string ip, u_int port) : ip(ip), port(port) {
         conn = redisConnect(ip.c_str(), port);
         if (conn->err) LOG(ERROR) << "connection error: " << conn->errstr;
+//        clearToken();
     };
 
     void setJson(json json_str);
@@ -69,10 +71,15 @@ public:
 
     string popMessageQueue();
 
+    int getRegisterNums();
+
+    void clearToken();
 
     void setFd(int fd, const string &name);
 
     void setToken(const string &token, const string &name);
+
+    int getOnlineNums();
 };
 
 

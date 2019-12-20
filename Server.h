@@ -45,6 +45,7 @@ public:
         _messageQueue->run();
     }
 
+    int getOnlineNums();
 
     void run();
 

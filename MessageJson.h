@@ -54,6 +54,10 @@ protected:
     string code2();
 
     string code1();
+
+    string code3();
+
+    string code4();
 };
 
 

@@ -4,8 +4,10 @@ Socket::Socket(QObject *parent) : QObject(parent) {
     tcpSocket = new QTcpSocket();
     connect(tcpSocket, SIGNAL(connected()), this, SLOT(connected()));
     connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(readData()));
-    tcpSocket->connectToHost("127.0.0.1", 6668, QTcpSocket::ReadWrite);
 
+}
+void Socket::init(QString ip,int port){
+    tcpSocket->connectToHost(ip, port, QTcpSocket::ReadWrite);
 }
 
 void Socket::connected() {
@@ -13,6 +15,7 @@ void Socket::connected() {
 }
 
 void Socket::readData() {
+    qDebug() << "readMessage";
     QString readMessage = tcpSocket->readAll();
     qDebug() << "readMessage: " << readMessage << "\n";
     try {
@@ -21,7 +24,6 @@ void Socket::readData() {
         qDebug() << e.what();
         return;
     }
-
     int code = _json["code"];
     switch (code) {
         case 0:
@@ -30,6 +32,9 @@ void Socket::readData() {
         case 1:
             emit code1(_json);
             qDebug() << "registered";
+        case 4:
+            emit code4(_json);
+            qDebug() << "getRegisterNums";
         default:
             qDebug() << "default";
     }
@@ -55,6 +60,15 @@ void Socket::reg(QString name, QString passwd) {
     writeData(writeMessage);
 }
 
+
+void Socket::getRegisterNums(){
+    json message;
+    message["code"] = 4;
+    message["token"] = token.toStdString();
+    QString writeMessage = QString::fromStdString(message.dump());
+    qDebug() << "getRegisterNums: " << writeMessage;
+    writeData(writeMessage);
+}
 
 void Socket::writeData(QString message) {
     tcpSocket->write(message.toLatin1());

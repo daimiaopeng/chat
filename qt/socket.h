@@ -13,34 +13,26 @@ class Socket : public QObject {
     Q_OBJECT
 public:
     explicit Socket(QObject *parent = nullptr);
-
+    QTcpSocket *tcpSocket;
     void writeData(QString message);
+    void init(QString ip,int port);
 
-
-    signals:
-
-            void
-    code0(json
-    _json);
-
+        QString token;
+signals:
+    void code0(json _json);
     void code1(json _json);
-
+    void code4(json _json);
 public
     slots:
-
-            void
-
-    readData();
-
+    void readData();
     void connected();
-
     void login(QString name, QString passwd);
-
     void reg(QString name, QString passwd);
-
+    void getRegisterNums();
 protected:
     json _json;
-    QTcpSocket *tcpSocket;
+
+
 };
 
 #endif // SOCKET_H

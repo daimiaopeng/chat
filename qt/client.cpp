@@ -2,53 +2,31 @@
 #include "ui_client.h"
 #include <QDebug>
 
-Client::Client(QWidget *parent) :
+Client::Client(QWidget *parent, Socket *socket) :
         QDialog(parent),
-        ui(new Ui::Client) {
-
-    ui->setupUi(this);
-
+        ui(new Ui::Client),
+        _socket(socket)
+{
+        ui->setupUi(this);
+        QObject::connect(socket, SIGNAL(code4(json)), this, SLOT(code4(json)));
+        QObject::connect(this, SIGNAL(getRegisterNums()), _socket, SLOT(getRegisterNums()));
 }
 
 Client::~Client() {
     delete ui;
 }
 
-void Client::pustText() {
-    str = tcpSocket->readAll();
-    ui->textEdit_2->setText(str);
-    qDebug() << "str: " << str << "\n";
+void Client::code4(json _json){
+    int nums =_json["nums"];
+    qDebug()<<nums;
+    ui->label_6->setText(QString(nums));
 }
 
-void Client::on_pushButton_clicked() {
-    QString input_data = ui->textEdit->toPlainText();
 
-    QString receiver = ui->lineEdit->text();
-    QString name = ui->lineEdit_2->text();
-//  qDebug()<<receiver<<"\n";
-    if (receiver != "") {
-        send(receiver + " " + input_data);
-        tcpSocket->waitForBytesWritten(1);
-    }
 
-    if (name != "") {
-        send("setname " + name + "\n");
-        tcpSocket->waitForBytesWritten(1);
-    }
+void Client::on_pushButton_clicked()
+{
 
-}
+    emit getRegisterNums();
 
-void Client::send(QString str) {
-    qDebug() << "send str: " << str << "";
-    tcpSocket->write(str.toLatin1());
-
-}
-
-QString Client::read() {
-    QString str = tcpSocket->readAll();
-    return str;
-}
-
-void Client::connected() {
-    qDebug() << "connected()";
 }

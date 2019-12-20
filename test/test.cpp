@@ -13,12 +13,14 @@
 using namespace std;
 
 void test0(Redis &redis) {
-    string name = "1223";
-    string passwd = name;
-    redis.login(name, passwd);
-    redis.registered(name, passwd);
-    string token = redis.login(name, passwd);
-    redis.getName(token);
+//    string name = "1223";
+//    string passwd = name;
+//    redis.login(name, passwd);
+//    redis.registered(name, passwd);
+//    string token = redis.login(name, passwd);
+    redis.getName("daimiaopeng");
+//    redis.getRegisterNums();
+//    redis.getOnlineNums();
 }
 
 

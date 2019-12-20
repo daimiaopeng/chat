@@ -2,8 +2,10 @@
 #define CLIENT_H
 
 #include <QDialog>
-#include<QtNetwork/QTcpSocket>
+#include"json.hpp"
+#include"socket.h"
 
+using json = nlohmann::json;
 namespace Ui {
     class Client;
 }
@@ -12,33 +14,18 @@ class Client : public QDialog {
     Q_OBJECT
 
 public:
-    explicit Client(QWidget *parent = nullptr);
-
+    explicit Client(QWidget *parent = nullptr, Socket *socket = nullptr);
     ~Client();
 
-private
-    slots:
+private slots:
+    void code4(json _json);
+    void on_pushButton_clicked();
 
-//    void newConnect(); //连接服务器
-//    void readMessage();  //接收数据
-            void
-
-    on_pushButton_clicked();
-
-    void connected();
-
-    void pustText();
-
+signals:
+    void getRegisterNums();
 private:
-    QTcpSocket *tcpSocket;
     Ui::Client *ui;
-    QString str;
-
-    void displayError(QAbstractSocket::SocketError);  //显示错误
-    void send(QString str);
-
-    QString read();
-
+    Socket *_socket;
 };
 
 #endif // CLIENT_H

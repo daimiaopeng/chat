@@ -47,6 +47,7 @@ string Redis::getName(const string &token) {
     return str;
 }
 
+
 int Redis::getFd(const string &name) {
     auto reply = redisReply_ptr(redisCommand(conn, "HMGET fdName %s", name.c_str()));
     string str;
@@ -60,7 +61,7 @@ int Redis::getFd(const string &name) {
 }
 
 void Redis::setName(int fd, const string &name) {
-    auto reply = redisReply_ptr(redisCommand(conn, "HMSET fdName %s %s", name.c_str(), fd));
+    auto reply = redisReply_ptr(redisCommand(conn, "HMSET fdName %s %d", name.c_str(), fd));
 }
 
 string Redis::login(const string &name, const string &passwd) {
@@ -102,5 +103,28 @@ void Redis::setToken(const string &token, const string &name) {
 
 void Redis::init() {
 
+}
+
+int Redis::getOnlineNums() {
+    auto reply = redisReply_ptr(redisCommand(conn, "HLEN token"));
+    LOG(INFO) << "当前token数："<<reply->integer;
+    return reply->integer;
+}
+
+int Redis::getRegisterNums() {
+    auto reply = redisReply_ptr(redisCommand(conn, "HLEN login"));
+    LOG(INFO) << "当前注册人数："<<reply->integer;
+    return reply->integer;
+}
+
+
+
+void Redis::clearToken() {
+    auto reply = redisReply_ptr(redisCommand(conn, "DEL token"));
+    if (reply->integer==1){
+        LOG(INFO) <<"token 清空初始化成功";
+    }else{
+        LOG(ERROR) <<"token 清空初始化失败";
+    }
 }
 

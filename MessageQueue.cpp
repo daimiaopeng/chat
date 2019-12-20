@@ -9,6 +9,9 @@ void MessageQueue::push(const string &str, event_infor *infor) {
     MessageJson messageJson(redis, str);
     if (messageJson.isParseSuccess() == true) {
         string messageNew = messageJson.messageNew(infor);
+        if (messageNew=="giveUp"){
+            return;
+        }
         redis.pushMessageQueue(messageNew);
     }
 }
@@ -29,7 +32,6 @@ void MessageQueue::sendstr() {
         }
     }
 }
-
 void MessageQueue::sendMessage(const string &str) {
     MessageJson messageJson(redis, str);
     if (messageJson.isParseSuccess() == false) {
@@ -75,7 +77,7 @@ void MessageQueue::sendMessage(const string &str) {
 void MessageQueue::_sendPeople(int fd, const string &writeData) {
     for (int i = 0; i < len; i++) {
         if (g_events[i].status == 0 || g_events[i].fd != fd) continue;
-        LOG(INFO) << "发送fd：" << g_events[i].fd;
+        LOG(INFO) << "发送fd：" << g_events[i].fd<<"数据:"<<writeData;
         send(g_events[i].fd, writeData.c_str(), writeData.size(), 0);
     }
 }
