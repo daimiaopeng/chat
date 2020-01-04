@@ -11,7 +11,7 @@
 #include <iostream>
 #include <boost/regex.hpp>
 #include <memory>
-
+#include <set>
 
 using json = nlohmann::json;
 using namespace std;
@@ -33,14 +33,14 @@ public:
         } else {
             LOG(INFO) << "Redis认证成功！";
         }
-//        clearToken();
+        clearToken();
         freeReplyObject(reply);
     };
 
     Redis(string ip, u_int port) : ip(ip), port(port) {
         conn = redisConnect(ip.c_str(), port);
         if (conn->err) LOG(ERROR) << "connection error: " << conn->errstr;
-//        clearToken();
+        clearToken();
     };
 
     void setJson(json json_str);
@@ -58,6 +58,8 @@ public:
     void setName(int fd, const string &name);
 
     void delName(int fd);
+
+    set<string> geOnile();
 
     redisContext *getConn() { return conn; };
 
@@ -79,7 +81,7 @@ public:
 
     void setToken(const string &token, const string &name);
 
-    int getOnlineNums();
+
 };
 
 

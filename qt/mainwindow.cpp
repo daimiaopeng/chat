@@ -2,13 +2,14 @@
 #include "./ui_mainwindow.h"
 #include <QDebug>
 #include <QMessageBox>
-#include "client.h"
 
 
-MainWindow::MainWindow(QWidget *parent, Socket *socket)
+
+MainWindow::MainWindow(QWidget *parent, Socket *socket,Client *c)
         : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
     _socket = socket;
+    _c = c;
     QObject::connect(_socket, SIGNAL(code0(json)), this, SLOT(code0(json)));
     QObject::connect(this, SIGNAL(login(QString, QString)), _socket, SLOT(login(QString, QString)));
     connect(_socket->tcpSocket, SIGNAL(connected()), this, SLOT(connected()));
@@ -30,18 +31,14 @@ void MainWindow::code0(json _json) {
         qDebug() << e.what();
     }
     _socket->token = token;
-    goCilent(_json);
     qDebug() << "set token:" << token;
+    goCilent( _json);
 }
 
 void MainWindow::goCilent(json jsonMessage) {
     string message = jsonMessage["data"]["message"];
     if (token != "") {
-        Client client(nullptr,_socket);
-        //QMessageBox::warning(this, tr("Waring"), message.c_str(), QMessageBox::Yes);
-         this->close();
-//        _socket->tcpSocket->readAll();
-         client.exec();
+        QMessageBox::warning(this, tr("Waring"), message.c_str(), QMessageBox::Yes);
     } else {
         ui->pwdLineEdit->clear();
         ui->pwdLineEdit->setFocus();
@@ -55,7 +52,6 @@ void MainWindow::on_exitBtn_clicked() {
 
 
 void MainWindow::on_loginBtn_clicked() {
-
     QString name = ui->usrLineEdit->text();
     QString passwd = ui->pwdLineEdit->text();
     if (name == "") {
@@ -67,12 +63,10 @@ void MainWindow::on_loginBtn_clicked() {
         return;
     }
     emit login(name, passwd);
-
 }
 
 void MainWindow::connected(){
     QMessageBox::warning(this, tr("Waring"), tr("连接成功"), QMessageBox::Yes);
-    qDebug() << "connected1";
 }
 void MainWindow::on_registered_clicked() {
     Register reg(nullptr, _socket);
@@ -85,4 +79,11 @@ void MainWindow::on_linkBtn_clicked()
     QString ip = ui->ipLineEdit->text();
     int port = ui->portLineEdit->text().toInt();
     _socket->init(ip,port);
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    this->close();
+    _c->show();
+
 }

@@ -32,7 +32,6 @@ private slots:
 
 private:
     void exit();
-
     int isCode;
     Ui::Register *ui;
     Socket *_socket;

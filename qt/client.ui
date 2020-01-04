@@ -1,154 +1,131 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>Client</class>
- <widget class="QDialog" name="Client">
+ <widget class="QMainWindow" name="Client">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>835</width>
-    <height>558</height>
+    <width>678</width>
+    <height>513</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Client</string>
   </property>
-  <widget class="QPushButton" name="pushButton">
-   <property name="geometry">
-    <rect>
-     <x>590</x>
-     <y>420</y>
-     <width>161</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>发送</string>
-   </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QListWidget" name="listWidget">
+    <property name="geometry">
+     <rect>
+      <x>470</x>
+      <y>150</y>
+      <width>171</width>
+      <height>201</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>0</y>
+      <width>175</width>
+      <height>46</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="label_6">
+       <property name="styleSheet">
+        <string notr="true">font: 18pt &quot;微软雅黑&quot;;</string>
+       </property>
+       <property name="text">
+        <string>注册人数</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_7">
+       <property name="styleSheet">
+        <string notr="true">font: 18pt &quot;微软雅黑&quot;;</string>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>60</y>
+      <width>145</width>
+      <height>46</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="label_9">
+       <property name="styleSheet">
+        <string notr="true">font: 18pt &quot;微软雅黑&quot;;</string>
+       </property>
+       <property name="text">
+        <string>在线人数</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_8">
+       <property name="styleSheet">
+        <string notr="true">font: 18pt &quot;微软雅黑&quot;;</string>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
-  <widget class="QTextEdit" name="textEdit">
+  <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
-     <x>31</x>
-     <y>31</y>
-     <width>441</width>
-     <height>211</height>
+     <x>0</x>
+     <y>0</y>
+     <width>678</width>
+     <height>32</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuChat_Room">
+    <property name="title">
+     <string>Chat Room</string>
+    </property>
+   </widget>
+   <addaction name="menuChat_Room"/>
   </widget>
-  <widget class="QTextEdit" name="textEdit_2">
-   <property name="geometry">
-    <rect>
-     <x>31</x>
-     <y>249</y>
-     <width>441</width>
-     <height>241</height>
-    </rect>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
    </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
   </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>510</x>
-     <y>30</y>
-     <width>54</width>
-     <height>27</height>
-    </rect>
+  <widget class="QToolBar" name="toolBar_2">
+   <property name="windowTitle">
+    <string>toolBar_2</string>
    </property>
-   <property name="text">
-    <string>发送框</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>480</x>
-     <y>290</y>
-     <width>54</width>
-     <height>27</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>接收框</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_3">
-   <property name="geometry">
-    <rect>
-     <x>580</x>
-     <y>370</y>
-     <width>54</width>
-     <height>27</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>发送给</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="lineEdit">
-   <property name="geometry">
-    <rect>
-     <x>640</x>
-     <y>370</y>
-     <width>159</width>
-     <height>29</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="lineEdit_2">
-   <property name="geometry">
-    <rect>
-     <x>640</x>
-     <y>320</y>
-     <width>159</width>
-     <height>29</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_4">
-   <property name="geometry">
-    <rect>
-     <x>590</x>
-     <y>320</y>
-     <width>36</width>
-     <height>27</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>昵称</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_5">
-   <property name="geometry">
-    <rect>
-     <x>600</x>
-     <y>70</y>
-     <width>120</width>
-     <height>44</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">font: 18pt &quot;微软雅黑&quot;;</string>
-   </property>
-   <property name="text">
-    <string>在线人数</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_6">
-   <property name="geometry">
-    <rect>
-     <x>640</x>
-     <y>120</y>
-     <width>101</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">font: 18pt &quot;微软雅黑&quot;;</string>
-   </property>
-   <property name="text">
-    <string>0人</string>
-   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
   </widget>
  </widget>
  <resources/>

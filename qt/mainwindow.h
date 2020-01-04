@@ -6,7 +6,7 @@
 #include <QDebug>
 #include<json.hpp>
 #include "register.h"
-
+#include "client.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -15,7 +15,7 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr, Socket *socket = nullptr);
+    MainWindow(QWidget *parent = nullptr, Socket *socket = nullptr, Client *c = nullptr);
 
     ~MainWindow();
 
@@ -46,11 +46,14 @@ private
 
             void on_linkBtn_clicked();
 
+            void on_pushButton_clicked();
+
 private:
     QString token;
     Socket *_socket;
+    Client *_c;
     Ui::MainWindow *ui;
-
+    bool w;
     void goCilent(json jsonMessage);
 };
 

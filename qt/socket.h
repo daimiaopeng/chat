@@ -21,6 +21,7 @@ public:
 signals:
     void code0(json _json);
     void code1(json _json);
+    void code2(json _json);
     void code4(json _json);
 public
     slots:
@@ -29,6 +30,7 @@ public
     void login(QString name, QString passwd);
     void reg(QString name, QString passwd);
     void getRegisterNums();
+    void getOnile();
 protected:
     json _json;
 

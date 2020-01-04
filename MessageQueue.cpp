@@ -39,11 +39,12 @@ void MessageQueue::sendMessage(const string &str) {
     }
     string writeData = messageJson.res();
     int fd;
-    string receiver = messageJson.getJson()["receiver"];
+    json tempJson = messageJson.getJson();
+    string receiver = tempJson["receiver"];
     if (receiver == "None") {
-        fd = messageJson.getJson()["fd"];
+        fd = tempJson["fd"];
     } else {
-        fd = redis.getFd(messageJson.getJson()["receiver"]);
+        fd = redis.getFd(tempJson["receiver"]);
     }
     _sendPeople(fd, writeData);
 

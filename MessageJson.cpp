@@ -14,7 +14,7 @@ string MessageJson::res() {
                 type = "registered";
                 return code1();
             case 2:
-                type = "sendALl";
+                type = "getOnile";
                 return code2();
             case 3:
                 type = "sendPeople";
@@ -34,12 +34,15 @@ string MessageJson::res() {
 }
 
 string MessageJson::code0() {
+    //登录接口
 //    {"code":0,"data":{"passwd":"123456","name":"daimiaopeng"}}
+//    {"code":0,"data":{"passwd":"qwe","name":"qwe"}}
     string name = _json["data"]["name"];
     string passwd = _json["data"]["passwd"];
-    string token = redis.login(name, passwd);
     string message;
     json reJsonStr;
+
+    string token = redis.login(name, passwd);
     if (token != "") {
         message = "登录成功";
     } else {
@@ -51,8 +54,8 @@ string MessageJson::code0() {
     return reJsonStr.dump();
 }
 
-
 string MessageJson::code1() {
+    //注册接口
 //    {"code":1,"data":{"passwd":"123412356","name":"qwieuy"}}
     string name = _json["data"]["name"];
     string passwd = _json["data"]["passwd"];
@@ -74,14 +77,36 @@ string MessageJson::code1() {
 }
 
 string MessageJson::code2() {
-    return "接口正在开发中";
+    //获取在线人数和列表
+    //{"code":2,"token":"qwe"}
+//   return {"code":2,"data":["qwe"],"nums":1}
+    auto all = redis.geOnile();
+    json reJsonStr;
+    reJsonStr["code"] = code;
+    int nums=0;
+    json j_array{};
+    for(auto i:all){
+        nums++;
+        j_array.push_back(i);
+    }
+    reJsonStr["data"] = j_array;
+    reJsonStr["nums"] = nums;
+    return reJsonStr.dump();
 }
 
 string MessageJson::code3() {
-    return std::__cxx11::string();
+    // 发送消息给某个人接口
+//    {"code":3,"token":"qwe","receiver":"daimiaopeng","data":"hello"}
+//    {"code":3,"token":"daimiaopeng","receiver":"qwe","data":"hello"}
+    json reJsonStr;
+    reJsonStr["code"] = code;
+    reJsonStr["data"]["message"] = _json["data"];
+    reJsonStr["sender"] = _json["sender"];
+    return reJsonStr.dump();
 }
 
 string MessageJson::code4() {
+    //获取注册人数接口
 //    {"code":4,"token":"daimiaopeng"}
     int nums = redis.getRegisterNums();
     string token = _json["token"];
@@ -131,8 +156,12 @@ string MessageJson::messageNew(event_infor *infor) {
     _json["fd"] = infor->fd;
     _json["port"] = infor->port;
     _json["status"] = infor->status;
-    //暂时receiver = sender
-    _json["receiver"] = _json["sender"];
+
+    auto receiver = _json.find("receiver");
+    if (receiver == _json.end()) {
+        _json["receiver"] = _json["sender"];
+    }
+
     LOG(INFO) << "set sender name=" << name << " ip=" << infor->ip << " port=" << infor->port;
     return _json.dump();
 }

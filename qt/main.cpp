@@ -6,9 +6,10 @@
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
-
     Socket socket;
-    MainWindow w(nullptr, &socket);
+    Client c(nullptr,&socket);
+    MainWindow w(nullptr, &socket,&c);
     w.show();
+
     return app.exec();
 }

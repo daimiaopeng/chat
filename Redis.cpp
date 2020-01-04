@@ -105,16 +105,25 @@ void Redis::init() {
 
 }
 
-int Redis::getOnlineNums() {
-    auto reply = redisReply_ptr(redisCommand(conn, "HLEN token"));
-    LOG(INFO) << "当前token数："<<reply->integer;
-    return reply->integer;
-}
+
 
 int Redis::getRegisterNums() {
     auto reply = redisReply_ptr(redisCommand(conn, "HLEN login"));
     LOG(INFO) << "当前注册人数："<<reply->integer;
     return reply->integer;
+}
+
+set<string> Redis::geOnile() {
+    set<string> all;
+    auto reply = redisReply_ptr(redisCommand(conn, "HGETALL token"));
+    auto element  = reply->element;
+    for (int i =0;i<reply->elements;i= i+2){
+        //取name而不是token
+        all.insert(move(string(element[i+1]->str)));
+    }
+
+//    LOG(INFO) << "当前在线人： "<<(*element)->;
+    return all;
 }
 
 
