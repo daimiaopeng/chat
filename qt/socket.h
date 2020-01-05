@@ -16,12 +16,14 @@ public:
     QTcpSocket *tcpSocket;
     void writeData(QString message);
     void init(QString ip,int port);
-
-        QString token;
+    QString receiver;
+    QString userName;
+    QString token;
 signals:
     void code0(json _json);
     void code1(json _json);
     void code2(json _json);
+    void code3(json _json);
     void code4(json _json);
 public
     slots:
@@ -33,6 +35,7 @@ public
     void getOnile();
 protected:
     json _json;
+
 
 
 };

@@ -41,8 +41,6 @@ string MessageJson::res() {
     catch (std::exception &e) {
         return "错误";
     }
-
-    return "string MessageJson::res()";
 }
 
 string MessageJson::code0() {
@@ -55,7 +53,7 @@ string MessageJson::code0() {
     json reJsonStr;
 
     string token = redis.login(name, passwd);
-    if (token != "") {
+    if (!token.empty()) {
         message = "登录成功";
     } else {
         message = "登录失败";
@@ -110,6 +108,7 @@ string MessageJson::code3() {
     // 发送消息给某个人接口
 //    {"code":3,"token":"qwe","receiver":"daimiaopeng","data":"hello"}
 //    {"code":3,"token":"daimiaopeng","receiver":"qwe","data":"hello"}
+//    write {"code":3,"data":{"message":"qwe"},"sender":"qwe"}
     json reJsonStr;
     reJsonStr["code"] = code;
     reJsonStr["data"]["message"] = _json["data"];

@@ -37,6 +37,9 @@ void Socket::readData() {
             emit code2(_json);
             qDebug() << "registered";
             break;
+        case 3:
+            emit code3(_json);
+            break;
         case 4:
             emit code4(_json);
             qDebug() << "getRegisterNums";

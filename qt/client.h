@@ -6,7 +6,9 @@
 #include"socket.h"
 #include <QMainWindow>
 #include <QTimer>
-
+#include<QListWidget>
+#include<QStringListModel>
+#include<QTextEdit>
 using json = nlohmann::json;
 
 namespace Ui {
@@ -25,8 +27,11 @@ public:
 private slots:
     void code4(json _json);
     void code2(json _json);
+    void code3(json _json);
     void on_pushButton_clicked();
     void timerUpdate();
+
+    void on_listWidget_itemActivated(QListWidgetItem *item);
 
 private:
     QTimer *timer;

@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent, Socket *socket,Client *c)
     connect(_socket->tcpSocket, SIGNAL(connected()), this, SLOT(connected()));
     //connect(_socket->tcpSocket, SIGNAL(disconnected()), this, SLOT(linkError()));
     ui->usrLineEdit->setFocus();
+    on_linkBtn_clicked();
 }
 
 MainWindow::~MainWindow() {
@@ -62,6 +63,7 @@ void MainWindow::on_loginBtn_clicked() {
         QMessageBox::warning(this, tr("Waring"), tr("密码为空"), QMessageBox::Yes);
         return;
     }
+    _socket->userName = name;
     emit login(name, passwd);
 }
 
