@@ -13,13 +13,6 @@
 #include <vector>
 #include<algorithm>
 
-struct event_infor;
-
-class MessageQueue;
-
-class MessageJson;
-
-
 class Server {
 private:
     string _ip;
@@ -30,22 +23,7 @@ private:
     struct event_infor g_events[MAX_EVENTS + 1]{};
     MessageQueue *_messageQueue;
 public:
-    Server(string ip, u_int port, const MessageQueue *messageQueue) : _ip(ip), _port(port), _messageQueue(
-            const_cast<MessageQueue *>(messageQueue)) {
-        lfd = socket(AF_INET, SOCK_STREAM, 0);
-        bzero(&serv_addr, sizeof(serv_addr));
-        serv_addr.sin_addr.s_addr = inet_addr(_ip.c_str());
-        serv_addr.sin_port = htons(_port);
-        serv_addr.sin_family = AF_INET;
-        LOG(INFO) << "Using ip: " << _ip << " port: " << _port;
-        bind(lfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
-        listen(lfd, 128);
-        epoll_fd = epoll_create(128);
-        _messageQueue->init(g_events, MAX_EVENTS);
-        _messageQueue->run();
-    }
-
-    int getOnlineNums();
+    Server(string ip, u_int port, const MessageQueue *messageQueue);
 
     void run();
 
@@ -59,11 +37,7 @@ public:
 
     void acceptconn(event_infor *infor);
 
-    void initsocket(event_infor &l_infor);
-
     void eventadd(int events, event_infor *infor);
-
-    void initsocket(event_infor *l_infor);
 
     void senddata(event_infor *infor);
 };

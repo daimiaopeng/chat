@@ -17,26 +17,21 @@
 
 using namespace std;
 
-class Server;
-
-struct event_infor;
-
 class MessageQueue {
 private:
-    queue<string> _queue;
-    event_infor *g_events;
-    int len;
+    event_infor *_g_events;
+    int _len;
     mutex _mutex;
 
 public:
     Redis redis;
-public:
-    MessageQueue(Redis redis) : redis(redis) {};
 
-    void init(event_infor *g_events, int len) {
-        this->g_events = g_events;
-        this->len = len;
-    };
+public:
+    explicit MessageQueue(Redis &redis);
+
+    MessageQueue() = delete;
+
+    void init(event_infor *g_events, int len);
 
     void push(const string &str, event_infor *infor);
 
@@ -44,13 +39,10 @@ public:
 
     void sendstr();
 
-
     void sendMessage(const string &str);
 
 protected:
     void _sendPeople(int fd, const string &writeData);
-
-    void send1(int fd, string &str);
 };
 
 

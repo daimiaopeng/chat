@@ -5,7 +5,22 @@
 #include "Server.h"
 
 using namespace std;
-using namespace std::placeholders;
+
+Server::Server(string ip, u_int port, const MessageQueue *messageQueue) : _ip(ip), _port(port), _messageQueue(
+        const_cast<MessageQueue *>(messageQueue)) {
+    lfd = socket(AF_INET, SOCK_STREAM, 0);
+    bzero(&serv_addr, sizeof(serv_addr));
+    serv_addr.sin_addr.s_addr = inet_addr(_ip.c_str());
+    serv_addr.sin_port = htons(_port);
+    serv_addr.sin_family = AF_INET;
+    LOG(INFO) << "Using ip: " << _ip << " port: " << _port;
+    bind(lfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
+    listen(lfd, 128);
+    epoll_fd = epoll_create(128);
+    _messageQueue->init(g_events, MAX_EVENTS);
+    _messageQueue->run();
+}
+
 
 void Server::run() {
     initsocket();
@@ -20,11 +35,9 @@ void Server::run() {
             event_infor *infor = static_cast<event_infor *>(events[i].data.ptr);
             if (events[i].events & EPOLLIN) {
                 infor->readCallback(infor);
-//                printf("readCallback\n");
             }
             if (events[i].events & EPOLLOUT) {
                 infor->writeCallback(infor);
-//                printf("writeCallback\n");
             }
 //            auto res = async(launch::async, infor->eventCallback,infor);
             //线程不应该在这里创建，同一个fd反复创建线程
@@ -75,7 +88,7 @@ void Server::acceptconn(event_infor *infor) {
     }
     event_infor *cli_event_infor = &g_events[i];
     cli_event_infor->fd = cfd;
-    cli_event_infor->status = 1;
+    cli_event_infor->status = true;
     cli_event_infor->port = socket_addr.sin_port;
     cli_event_infor->ip = inet_ntoa(socket_addr.sin_addr);
     cli_event_infor->readCallback = [&](event_infor *infor) { recvdata(infor); };
@@ -91,16 +104,16 @@ void Server::recvdata(event_infor *infor) {
 //    read(infor->fd, infor->buff,BUFF_MAX);
     int n = recv(infor->fd, infor->buff, BUFF_MAX - 1, 0);
     if (n > 0) { //收到的数据
-        infor->buff[n] == '\0';
+        infor->buff[n] = '\0';
         LOG(INFO) << infor->ip << " 发来一条消息: " << infor->buff;
         _messageQueue->push(infor->buff, infor);
     } else if (n == 0) {
         LOG(INFO) << "fd: " << infor->fd << " 连接关闭";
         close(infor->fd);
-        infor->status = 0;
+        infor->status = false;
     } else {
         close(infor->fd);
-        infor->status = 0;
+        infor->status = false;
 //        LOG(ERROR) << "接收数据失败";
         LOG(INFO) << "fd: " << infor->fd << " 连接关闭";
 //        printf("recv[fd=%d] error[%d]:%s\n", infor->fd, errno, strerror(errno));
@@ -134,7 +147,7 @@ void Server::senddata(event_infor *infor) {
 }
 
 void Server::eventadd(int events, event_infor *infor) {
-    epoll_event event{0, {0}};
+    epoll_event event{0, {nullptr}};
     event.events = events;
     infor->events = events;
     event.data.ptr = static_cast<void *>(infor);

@@ -4,6 +4,25 @@
 
 #include "Redis.h"
 
+Redis::Redis(string ip, u_int port, string passwd) : ip(ip), port(port) {
+    conn = redisConnect(ip.c_str(), port);
+    if (conn->err) printf("connection error:%s\n", conn->errstr);
+    redisReply *reply = static_cast<redisReply *>(redisCommand(conn, "AUTH %s", passwd.c_str()));
+    if (reply->type == REDIS_REPLY_ERROR) {
+        LOG(INFO) << "Redis认证失败！";
+    } else {
+        LOG(INFO) << "Redis认证成功！";
+    }
+    clearToken();
+    freeReplyObject(reply);
+};
+
+Redis::Redis(string ip, u_int port) : ip(ip), port(port) {
+    conn = redisConnect(ip.c_str(), port);
+    if (conn->err) LOG(ERROR) << "connection error: " << conn->errstr;
+    clearToken();
+};
+
 
 auto Redis::redisReply_ptr(void *reply) {
     auto delRedisReply = [](redisReply *reply) {
@@ -129,11 +148,8 @@ set<string> Redis::geOnile() {
 
 
 void Redis::clearToken() {
-    auto reply = redisReply_ptr(redisCommand(conn, "DEL token"));
-    if (reply->integer==1){
-        LOG(INFO) <<"token 清空初始化成功";
-    }else{
-        LOG(ERROR) <<"token 清空初始化失败";
-    }
+    redisReply_ptr(redisCommand(conn, "DEL token"));
+    LOG(INFO) <<"token 清空初始化成功";
 }
+
 

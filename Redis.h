@@ -16,7 +16,6 @@
 using json = nlohmann::json;
 using namespace std;
 
-//using boost::regex;
 class Redis {
 private:
     string ip;
@@ -24,26 +23,9 @@ private:
     redisContext *conn;
 
 public:
-    Redis(string ip, u_int port, string passwd) : ip(ip), port(port) {
-        conn = redisConnect(ip.c_str(), port);
-        if (conn->err) printf("connection error:%s\n", conn->errstr);
-        redisReply *reply = static_cast<redisReply *>(redisCommand(conn, "AUTH %s", passwd.c_str()));
-        if (reply->type == REDIS_REPLY_ERROR) {
-            LOG(INFO) << "Redis认证失败！";
-        } else {
-            LOG(INFO) << "Redis认证成功！";
-        }
-        clearToken();
-        freeReplyObject(reply);
-    };
+    Redis(string ip, u_int port, string passwd);
 
-    Redis(string ip, u_int port) : ip(ip), port(port) {
-        conn = redisConnect(ip.c_str(), port);
-        if (conn->err) LOG(ERROR) << "connection error: " << conn->errstr;
-        clearToken();
-    };
-
-    void setJson(json json_str);
+    Redis(string ip, u_int port);
 
     void init();
 
@@ -63,7 +45,7 @@ public:
 
     redisContext *getConn() { return conn; };
 
-    auto redisReply_ptr(void* reply);
+    auto redisReply_ptr(void *reply);
 
     string login(const string &name, const string &passwd);
 

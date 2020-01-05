@@ -24,23 +24,10 @@ public:
     string type;
     json _json;
     Redis redis;
-public:
-//    MessageJson(int type, string send, string receive) : type(type), send(sender), receive(receive) {
-//        toJson = {{"type", type},{"data", {{"send", send},{"receive", receive}}}};
-//    }
-    MessageJson(const Redis &redis, const string &str) : redis(redis) {
-        try {
-            _json = json::parse(str);
-            _isParseSuccess = true;
-        }
-        //test
-        catch (std::exception &e) {
-            _isParseSuccess = false;
-            LOG(ERROR) << "消息格式错误: " << e.what();
-        }
-    }
 
 public:
+    MessageJson(const Redis &redis, const string &str);
+
     string messageNew(event_infor *infor);
 
     bool isParseSuccess();

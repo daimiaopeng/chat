@@ -4,12 +4,15 @@
 
 #include "MessageQueue.h"
 
+
+MessageQueue::MessageQueue(Redis &redis) : redis(redis) {}
+
 void MessageQueue::push(const string &str, event_infor *infor) {
     lock_guard<mutex> lock(_mutex);
     MessageJson messageJson(redis, str);
-    if (messageJson.isParseSuccess() == true) {
+    if (messageJson.isParseSuccess()) {
         string messageNew = messageJson.messageNew(infor);
-        if (messageNew=="giveUp"){
+        if (messageNew == "giveUp") {
             return;
         }
         redis.pushMessageQueue(messageNew);
@@ -32,9 +35,10 @@ void MessageQueue::sendstr() {
         }
     }
 }
+
 void MessageQueue::sendMessage(const string &str) {
     MessageJson messageJson(redis, str);
-    if (messageJson.isParseSuccess() == false) {
+    if (!messageJson.isParseSuccess()) {
         return;
     }
     string writeData = messageJson.res();
@@ -47,38 +51,19 @@ void MessageQueue::sendMessage(const string &str) {
         fd = redis.getFd(tempJson["receiver"]);
     }
     _sendPeople(fd, writeData);
-
-//    int index = str.find_first_of(" ");
-//    string name = str.substr(0, index);
-//    string message = str.substr(index + 1, str.length() - 1);
-//    if (name == "all") {
-//        for (int i = 0; i < len; i++) {
-//            if (g_events[i].status == 0) continue;
-//            send(g_events[i].fd, message.c_str(), message.size(), 0);
-//        }
-//        LOG(INFO) << "发送给全部：" << message;
-//        return;
-//    } else {
-//        int fd = redis.getFd(name);
-//        if (fd == -1){
-//            //在这里用push会死锁
-////            redis.pushMessageQueue(str);
-//            return;
-//        }
-//        for (int i = 0; i < len; i++) {
-//            if (fd == g_events[i].fd && fd != -1) {
-//                if (g_events[i].status == 0) break;
-//                send(fd, message.c_str(), message.size(), 0);
-//                LOG(INFO) << "发送给:" << name << "发送消息：" << message;
-//            }
-//        }
-//    }
 }
 
 void MessageQueue::_sendPeople(int fd, const string &writeData) {
-    for (int i = 0; i < len; i++) {
-        if (g_events[i].status == 0 || g_events[i].fd != fd) continue;
-        LOG(INFO) << "发送fd：" << g_events[i].fd<<"数据:"<<writeData;
-        send(g_events[i].fd, writeData.c_str(), writeData.size(), 0);
+    for (int i = 0; i < _len; i++) {
+        if (_g_events[i].status == 0 || _g_events[i].fd != fd) continue;
+        LOG(INFO) << "发送fd：" << _g_events[i].fd << "数据:" << writeData;
+        send(_g_events[i].fd, writeData.c_str(), writeData.size(), 0);
     }
 }
+
+void MessageQueue::init(event_infor *g_events, int len) {
+    this->_g_events = g_events;
+    this->_len = len;
+}
+
+

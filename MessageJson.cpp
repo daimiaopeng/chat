@@ -3,6 +3,18 @@
 //
 #include "MessageJson.h"
 
+MessageJson::MessageJson(const Redis &redis, const string &str) : redis(redis) {
+    try {
+        _json = json::parse(str);
+        _isParseSuccess = true;
+    }
+        //test
+    catch (std::exception &e) {
+        _isParseSuccess = false;
+        LOG(ERROR) << "消息格式错误: " << e.what();
+    }
+}
+
 string MessageJson::res() {
     try {
         code = _json["code"];
@@ -173,6 +185,8 @@ bool MessageJson::isParseSuccess() {
 json MessageJson::getJson() {
     return _json;
 }
+
+
 
 
 
