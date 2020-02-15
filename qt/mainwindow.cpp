@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent, Socket *socket,Client *c)
     //connect(_socket->tcpSocket, SIGNAL(disconnected()), this, SLOT(linkError()));
     ui->usrLineEdit->setFocus();
     on_linkBtn_clicked();
+    setWindowTitle(tr("登录"));
 }
 
 MainWindow::~MainWindow() {

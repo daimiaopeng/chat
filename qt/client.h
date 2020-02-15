@@ -9,6 +9,8 @@
 #include<QListWidget>
 #include<QStringListModel>
 #include<QTextEdit>
+#include <QMessageBox>
+
 using json = nlohmann::json;
 
 namespace Ui {

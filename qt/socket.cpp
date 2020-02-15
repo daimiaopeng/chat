@@ -1,9 +1,10 @@
-#include "socket.h"
+﻿#include "socket.h"
 
 Socket::Socket(QObject *parent) : QObject(parent) {
     tcpSocket = new QTcpSocket();
     connect(tcpSocket, SIGNAL(connected()), this, SLOT(connected()));
     connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(readData()));
+
 }
 void Socket::init(QString ip,int port){
     tcpSocket->connectToHost(ip, port, QTcpSocket::ReadWrite);
@@ -88,7 +89,7 @@ void Socket::getRegisterNums(){
 }
 
 void Socket::writeData(QString message) {
-    tcpSocket->write(message.toLatin1());
+    tcpSocket->write(message.toUtf8());
 
     tcpSocket->waitForBytesWritten(1);
 }

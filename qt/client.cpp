@@ -1,4 +1,4 @@
-#include "client.h"
+﻿#include "client.h"
 #include "ui_client.h"
 #include <QDebug>
 
@@ -18,6 +18,7 @@ Client::Client(QWidget *parent, Socket *socket) :
         timer->start(2000);
         ui->setupUi(this);
         ui->textBrowser->setReadOnly(true);
+        setWindowTitle(tr("聊天客户端"));
 }
 
 Client::~Client() {
@@ -33,13 +34,14 @@ void Client::code4(json _json){
 
 void Client::code3(json _json){
     ui->textBrowser->moveCursor(QTextCursor::End);
-    QString message = QString::fromStdString(_json["data"]["message"]);
+    QString message = QString::fromStdString(_json["data"]["message"]).toLocal8Bit();
     QString sender = QString::fromStdString(_json["sender"]);
     qDebug()<<"message: "<<message;
 
 
-    QString mess = sender+": "+message+"\n";
-    ui->textBrowser->append("<font color=\"#FF0000\">"+mess+"</font>");
+    QString mess = "<font color=\"#FF0000\">"+sender+": "+message+"\n"+"</font>";
+
+    ui->textBrowser->append(mess);
 
 }
 
@@ -66,11 +68,16 @@ void Client::on_pushButton_clicked()
 {
     QString input_data = ui->textEdit->toPlainText();
     if(input_data=="") return;
+    if(_socket->receiver==""){
+        QMessageBox::warning(this, tr("Waring"), "请选择一个聊天用户", QMessageBox::Yes);
+        return;
+    }
     json _json;
     _json["token"] = _socket->token.toStdString();
     _json["code"] = 3;
     _json["receiver"] = _socket->receiver.toStdString();
     _json["data"] = input_data.toStdString();
+
     _socket->writeData(QString::fromStdString(_json.dump()));
     ui->textBrowser->moveCursor(QTextCursor::End);
     QString mess = "you: "+input_data+"\n";

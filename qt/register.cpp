@@ -9,6 +9,7 @@ Register::Register(QWidget *parent, Socket *socket) :
     QObject::connect(_socket, SIGNAL(code1(json)), this, SLOT(code1(json)));
     QObject::connect(this, SIGNAL(reg(QString, QString)), _socket, SLOT(reg(QString, QString)));
     ui->setupUi(this);
+    setWindowTitle(tr("注册"));
 }
 
 
