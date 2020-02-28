@@ -34,6 +34,9 @@ string MessageJson::res() {
             case 4:
                 type = "getRegisterNums";
                 return code4();
+            case 5:
+                type = "sendFlie";
+                return code5();
             default:
                 return "";
         }
@@ -183,6 +186,15 @@ bool MessageJson::isParseSuccess() {
 
 json MessageJson::getJson() {
     return _json;
+}
+
+string MessageJson::code5() {
+    json reJsonStr;
+    reJsonStr["code"] = code;
+    reJsonStr["data"]["message"] = _json["data"];
+    reJsonStr["size"] = _json["size"];
+    reJsonStr["part"] = _json["part"];
+    return reJsonStr.dump();
 }
 
 

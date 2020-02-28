@@ -57,7 +57,8 @@ void MessageQueue::_sendPeople(int fd, const string &writeData) {
     for (int i = 0; i < _len; i++) {
         if (_g_events[i].status == 0 || _g_events[i].fd != fd) continue;
         LOG(INFO) << "发送fd：" << _g_events[i].fd << "数据:" << writeData;
-        send(_g_events[i].fd, writeData.c_str(), writeData.size(), 0);
+//        send(_g_events[i].fd, writeData.c_str(), writeData.size(), 0);
+        finalSend(_g_events[i].fd, writeData.c_str(), writeData.size(), 0);
     }
 }
 
@@ -66,4 +67,11 @@ void MessageQueue::init(event_infor *g_events, int len) {
     this->_len = len;
 }
 
-
+void MessageQueue::finalSend(int fd,string message,int size,int flages){
+    int len = sizeof(MessageStruct) + message.size();
+    MessageStruct *messageStruct = static_cast<struct MessageStruct *>(malloc(len));
+    messageStruct->jsonLen = message.size();
+    strncpy(messageStruct->json, message.c_str(), message.size());
+    send(fd, messageStruct, len, flages);
+    free(messageStruct) ;
+}

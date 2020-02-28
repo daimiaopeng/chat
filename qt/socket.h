@@ -1,4 +1,4 @@
-#ifndef SOCKET_H
+﻿#ifndef SOCKET_H
 #define SOCKET_H
 
 #include <QObject>
@@ -8,7 +8,10 @@
 
 using json = nlohmann::json;
 using namespace std;
-
+struct MessageStruct{
+    int jsonLen;
+    char json[0];
+};
 class Socket : public QObject {
     Q_OBJECT
 public:
@@ -25,6 +28,7 @@ signals:
     void code2(json _json);
     void code3(json _json);
     void code4(json _json);
+    void code5(json _json);
 public
     slots:
     void readData();

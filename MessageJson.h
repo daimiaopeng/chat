@@ -45,6 +45,8 @@ protected:
     string code3();
 
     string code4();
+
+    string code5();
 };
 
 

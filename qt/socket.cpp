@@ -1,5 +1,5 @@
 ﻿#include "socket.h"
-
+#include<cstring>
 Socket::Socket(QObject *parent) : QObject(parent) {
     tcpSocket = new QTcpSocket();
     connect(tcpSocket, SIGNAL(connected()), this, SLOT(connected()));
@@ -16,10 +16,15 @@ void Socket::connected() {
 
 void Socket::readData() {
     qDebug() << "readMessage";
-    QString readMessage = tcpSocket->readAll();
-    qDebug() << "readMessage: " << readMessage << "\n";
+    MessageStruct messageStruct;
+    tcpSocket->read((char*)&messageStruct,sizeof(MessageStruct));
+    char *jsonData = static_cast<char *>(malloc(messageStruct.jsonLen));
+    tcpSocket->read(jsonData,messageStruct.jsonLen);
+    string readMessage(jsonData,messageStruct.jsonLen);
+    free(jsonData);
+    qDebug() << "readMessage: " << QString::fromStdString(readMessage)<< "\n";
     try {
-        _json = json::parse(readMessage.toStdString());
+        _json = json::parse(readMessage);
     } catch (std::exception &e) {
         qDebug() << e.what();
         return;
@@ -44,6 +49,10 @@ void Socket::readData() {
         case 4:
             emit code4(_json);
             qDebug() << "getRegisterNums";
+            break;
+        case 5:
+            emit code5(_json);
+            qDebug() << "getFile";
             break;
         default:
             qDebug() << "default";
@@ -89,9 +98,14 @@ void Socket::getRegisterNums(){
 }
 
 void Socket::writeData(QString message) {
-    tcpSocket->write(message.toUtf8());
-
-    tcpSocket->waitForBytesWritten(1);
+    string data = message.toStdString();
+    int len = sizeof(MessageStruct) + data.size();
+    MessageStruct *messageStruct = static_cast<struct MessageStruct *>(malloc(len));
+    messageStruct->jsonLen = data.size();
+    strncpy(messageStruct->json, data.c_str(), data.size());
+    tcpSocket->write((char*) messageStruct,len);
+    tcpSocket->flush();
+    delete [] messageStruct;
 }
 
 

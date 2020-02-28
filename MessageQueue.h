@@ -43,6 +43,8 @@ public:
 
 protected:
     void _sendPeople(int fd, const string &writeData);
+
+    void finalSend(int fd, string message, int size, int flages);
 };
 
 

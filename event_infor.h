@@ -34,4 +34,10 @@ struct event_infor {
     epoll_event *epoll_infor;
     std::string id;
 };
+
+struct MessageStruct{
+    int jsonLen;
+    char json[0];
+};
+
 #endif //CHAT_PROJECT_EVENT_INFOR_H

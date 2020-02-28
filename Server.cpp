@@ -100,13 +100,19 @@ void Server::acceptconn(event_infor *infor) {
 }
 
 void Server::recvdata(event_infor *infor) {
-//    char buff[BUFF_MAX]{};
-//    read(infor->fd, infor->buff,BUFF_MAX);
-    int n = recv(infor->fd, infor->buff, BUFF_MAX - 1, 0);
+    MessageStruct messageStruct;
+    //读取结构体
+    int n = recv(infor->fd, &messageStruct, sizeof(MessageStruct), 0);
     if (n > 0) { //收到的数据
-        infor->buff[n] = '\0';
-        LOG(INFO) << infor->ip << " 发来一条消息: " << infor->buff;
-        _messageQueue->push(infor->buff, infor);
+        //获取结构体中的json长度字段
+        char *jsonData = static_cast<char *>(malloc(messageStruct.jsonLen));
+        //再读json数据
+        if (jsonData== nullptr)
+            return;
+        recv(infor->fd, jsonData, messageStruct.jsonLen, 0);
+//        LOG(INFO) << infor->ip << " 收到一条消息 jsonLen = " << messageStruct.jsonLen<<" jsonData = "<<jsonData;
+        _messageQueue->push(string(jsonData, messageStruct.jsonLen), infor);
+        free(jsonData);
     } else if (n == 0) {
         LOG(INFO) << "fd: " << infor->fd << " 连接关闭";
         close(infor->fd);
@@ -118,7 +124,6 @@ void Server::recvdata(event_infor *infor) {
         LOG(INFO) << "fd: " << infor->fd << " 连接关闭";
 //        printf("recv[fd=%d] error[%d]:%s\n", infor->fd, errno, strerror(errno));
     }
-    bzero(infor->buff, BUFF_MAX - 1);
 //    while ((n = read(infor->fd, buff, BUFF_MAX-1)) > 1) {
 //        printf("%s 发来一条消息: %s\n", infor->ip.c_str(), buff);
 //        bzero(buff, sizeof(buff));

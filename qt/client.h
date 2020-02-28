@@ -1,4 +1,4 @@
-#ifndef CLIENT_H
+﻿#ifndef CLIENT_H
 #define CLIENT_H
 
 #include <QDialog>
@@ -10,7 +10,9 @@
 #include<QStringListModel>
 #include<QTextEdit>
 #include <QMessageBox>
-
+#include<QFileDialog>
+#include<QProgressDialog>
+#include<QProgressBar>
 using json = nlohmann::json;
 
 namespace Ui {
@@ -27,6 +29,7 @@ public:
            void getRegisterNums();
            void getOnile();
 private slots:
+    void code5(json _json);
     void code4(json _json);
     void code2(json _json);
     void code3(json _json);
@@ -35,10 +38,13 @@ private slots:
 
     void on_listWidget_itemActivated(QListWidgetItem *item);
 
+    void on_pushButton_2_clicked();
+
 private:
     QTimer *timer;
     Ui::Client *ui;
     Socket *_socket;
+    int bufsize;
 };
 
 #endif // CLIENT_H
